@@ -6,7 +6,7 @@ import 'package:drugadmin/widget/assetImage_widget.dart';
 import 'package:flutter/material.dart';
 
 var itemsMenu =
-    '[{"icon": 59955, "title": "Tiendas", "action": "/tiendas"}, {"icon": 58051, "title": "Productos", "action": "/productos"},  {"icon": 59653, "title": "Usuarios", "action": "/usuarios"},  {"icon": 58391, "title": "Órdenes", "action": "/ordenes"},  {"icon": 59939, "title": "Banners", "action": "/banner"}, {"icon": 57740, "title": "Cerrar sesión", "action": "/login"}]';
+    '[{"icon": 62446, "title": "Tiendas", "action": "/tiendas"}, {"icon": 60988, "title": "Productos", "action": "/productos"},  {"icon": 62466, "title": "Usuarios", "action": "/usuarios"},  {"icon": 61821, "title": "Órdenes", "action": "/ordenes"},  {"icon": 983505, "title": "Banners", "action": "/banner"}, {"icon": 61849, "title": "Cerrar sesión", "action": "/login"}]';
 
 class ResponsiveApp extends StatefulWidget {
   final screenWidht;
