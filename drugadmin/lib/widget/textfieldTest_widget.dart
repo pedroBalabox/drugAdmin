@@ -152,11 +152,11 @@ class _EntradaTextoTestState extends State<EntradaTextoTest> {
       validator: typeValidator,
       maxLength: widget.longText == null ? maxCharacters : widget.longText,
       onSaved: widget.onSaved,
-      onChanged: (value){
-         if (value != "") {
-                  widget.formkey.currentState.save();
-                }
-      },
+      // onChanged: (value){
+      //    if (value != " ") {
+      //             widget.formkey.currentState.save();
+      //           }
+      // },
       // onEditingComplete = widget.onEditingComplete,
       obscureText: widget.tipo == 'password' ? true : false,
       enabled: widget.habilitado,

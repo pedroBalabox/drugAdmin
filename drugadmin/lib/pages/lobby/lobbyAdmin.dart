@@ -31,7 +31,6 @@ class _LobbyAdminState extends State<LobbyAdmin> {
   }
 
   redirigirRuta(bool clientAuth) {
-    print('MI RUTAAA!!' + widget.ruta.toString());
     switch (widget.ruta) {
       case '/':
         if (clientAuth) {
@@ -105,9 +104,7 @@ class _LobbyAdminState extends State<LobbyAdmin> {
       case '/agregarbanner':
         if (clientAuth) {
           Navigator.of(context)
-              .pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => CrearBanner()),
-                  (route) => true)
+              .push(MaterialPageRoute(builder: (context) => CrearBanner()))
               .then((value) => Navigator.pop(context));
         } else {
           Navigator.pushNamedAndRemoveUntil(

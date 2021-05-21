@@ -44,6 +44,9 @@ class _BannerPageState extends State<BannerPage> {
   }
 
   getBanner(status) async {
+    setState(() {
+      load = true;
+    });
     // var arrayData = {"fecha_de_exposicion": selectedDate};
     await rest
         .restService(
@@ -151,7 +154,10 @@ class _BannerPageState extends State<BannerPage> {
               )
             : search(),
         actions: [
-          IconButton(icon: Icon(Icons.add), onPressed: () => Navigator.pushNamed(context, '/agregarbanner'))
+          IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () => Navigator.pushNamed(context, '/agregarbanner')
+                  .then((value) => getBanner('approved')))
           // SimpleButtom(
           //     mainText: 'mainText',
           //     pressed: () => _buildMaterialDatePicker(context))
@@ -304,7 +310,7 @@ class DataSource extends DataTableSource {
         index: index, // DONT MISS THIS
         onSelectChanged: (bool value) {
           // _dialogCall(_context, _myData.categoria_id, _myData);
-         Navigator.pushNamed(_context, BannerDetalles.routeName,
+          Navigator.pushNamed(_context, BannerDetalles.routeName,
                   arguments: BannerDetailArguments(
                     _myData,
                   ))

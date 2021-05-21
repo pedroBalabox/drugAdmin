@@ -38,6 +38,9 @@ class MyApp extends StatelessWidget {
       //   //     .substring(16, window.location.href.length - 1)
       // ),
       initialRoute: '/login',
+      onUnknownRoute: (settings) {
+        return MaterialPageRoute(builder: (_) => LobbyAdmin(ruta: '/login'));
+      },
       onGenerateRoute: (RouteSettings settings) {
         if (settings.name == TiendaDetalles.routeName) {
           // Cast the arguments to the correct

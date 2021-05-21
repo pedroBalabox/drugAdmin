@@ -237,7 +237,7 @@ class _TabAceptadaState extends State<BannerDetalles> {
                         decoration: BoxDecoration(
                             color: bgGrey,
                             image: DecorationImage(
-                              image: imagePathMobile == null
+                              image: bannerModel.imagenMovil == null
                                   ? AssetImage('images/logoDrug.png')
                                   : imagePathMobile != null
                                       ? !kIsWeb
@@ -379,8 +379,11 @@ class _TabAceptadaState extends State<BannerDetalles> {
               "id_de_banner": bannerModel.idDeBanner,
               "titulo": bannerModel.titulo,
               "descripcion": bannerModel.descripcion,
-              "imagen_escritorio": bannerModel.imagenEscritorio,
-              "imagen_movil": bannerModel.imagenMovil,
+              "imagen_escritorio": imagePathDesktop == null
+                  ? null
+                  : bannerModel.imagenEscritorio,
+              "imagen_movil":
+                  imagePathMobile == null ? null : bannerModel.imagenMovil,
               "fecha_de_exposicion": "2021-06-15",
               "posicion": int.parse(bannerModel.posicion),
               "link_externo": bannerModel.linkExterno,

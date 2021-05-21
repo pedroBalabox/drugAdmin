@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:codigojaguar/codigojaguar.dart';
 import 'package:drugadmin/model/banner_model.dart';
 import 'package:drugadmin/service/restFunction.dart';
 import 'package:drugadmin/service/sharedPref.dart';
@@ -236,7 +237,7 @@ class _CrearBannerState extends State<CrearBanner> {
       child: Column(
         children: [
           // TODO: boton para fecha
-          // EntradaTextoTest(
+          // EntradaTexto(
           //   habilitado: false,
           //   valorInicial: bannerModel.fechaDeExposicion.toString(),
           //   estilo: inputPrimarystyle(
@@ -245,8 +246,7 @@ class _CrearBannerState extends State<CrearBanner> {
           //   textCapitalization: TextCapitalization.words,
           //   tipo: 'typeValidator',
           // ),
-          EntradaTextoTest(
-            formkey: formKey,
+          EntradaTexto(
             estilo:
                 inputPrimarystyle(context, Icons.star_outline, 'Título', null),
             tipoEntrada: TextInputType.name,
@@ -256,8 +256,7 @@ class _CrearBannerState extends State<CrearBanner> {
               bannerModel.titulo = value;
             }),
           ),
-          EntradaTextoTest(
-            formkey: formKey,
+          EntradaTexto(
             estilo: inputPrimarystyle(
                 context, Icons.star_outline, 'Descripción', null),
             tipoEntrada: TextInputType.name,
@@ -267,8 +266,7 @@ class _CrearBannerState extends State<CrearBanner> {
               bannerModel.descripcion = value;
             }),
           ),
-          EntradaTextoTest(
-            formkey: formKey,
+          EntradaTexto(
             estilo: inputPrimarystyle(
                 context, Icons.keyboard_arrow_up, 'Posición', null),
             tipoEntrada: TextInputType.name,
@@ -278,8 +276,7 @@ class _CrearBannerState extends State<CrearBanner> {
               bannerModel.posicion = value;
             }),
           ),
-          EntradaTextoTest(
-            formkey: formKey,
+          EntradaTexto(
             estilo: inputPrimarystyle(
                 context, Icons.attach_file_outlined, 'Link externo', null),
             tipoEntrada: TextInputType.name,
@@ -289,8 +286,7 @@ class _CrearBannerState extends State<CrearBanner> {
               bannerModel.linkExterno = value;
             }),
           ),
-          EntradaTextoTest(
-            formkey: formKey,
+          EntradaTexto(
             estilo: inputPrimarystyle(
                 context, Icons.store_outlined, 'Farmacia', null),
             tipoEntrada: TextInputType.name,
@@ -302,6 +298,11 @@ class _CrearBannerState extends State<CrearBanner> {
           ),
           SizedBox(height: smallPadding * 2),
           BotonRestTest(
+            primerAction: () {
+              if (formKey.currentState.validate()) {
+                formKey.currentState.save();
+              }
+            },
             restriccion: true,
             restriccionStr: 'Falta información',
             habilitado: bannerModel.imagenMovil == null
@@ -317,7 +318,7 @@ class _CrearBannerState extends State<CrearBanner> {
               "descripcion": bannerModel.descripcion,
               "imagen_escritorio": bannerModel.imagenEscritorio,
               "imagen_movil": bannerModel.imagenMovil,
-              "fecha_de_exposicion": DateTime.now().toString(),
+              "fecha_de_exposicion": '2021-06-14',
               "posicion": int.parse(bannerModel.posicion),
               "link_externo": bannerModel.linkExterno,
               "id_de_farmacia": bannerModel.idDeFarmacia,
