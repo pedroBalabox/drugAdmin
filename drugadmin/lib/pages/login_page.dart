@@ -6,6 +6,7 @@ import 'package:drugadmin/utils/theme.dart';
 import 'package:drugadmin/widget/assetImage_widget.dart';
 import 'package:drugadmin/widget/buttom_widget.dart';
 import 'package:drugadmin/widget/testRest.dart';
+import 'package:drugadmin/widget/textfieldTest_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:convert';
@@ -185,7 +186,8 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     SizedBox(height: smallPadding * 1.25),
                     InkWell(
-                      onTap: () => launchURL('https://app.drugsiteonline.com/login'),
+                      onTap: () =>
+                          launchURL('https://app.drugsiteonline.com/login'),
                       child: RichText(
                         textAlign: TextAlign.center,
                         text: TextSpan(
@@ -244,7 +246,22 @@ class _LoginPageState extends State<LoginPage> {
       key: formKey,
       child: Column(
         children: [
-          EntradaTexto(
+          // EntradaTextoTest(
+          //   requerido: false,
+          //   estilo: inputPrimarystyle(
+          //       context, Icons.lock_outline, 'Contraseña', null),
+          //   tipoEntrada: TextInputType.name,
+          //   textCapitalization: TextCapitalization.none,
+          //   action: TextInputAction.done,
+          //   tipo: 'texto',
+          //   onChanged: (value) {
+          //     setState(() {
+          //       password = value;
+          //     });
+          //   },
+          // ),
+          EntradaTextoTest(
+            longMaxima: 50,
             estilo: inputPrimarystyle(
                 context, Icons.person_outline, 'Correo', null),
             tipoEntrada: TextInputType.emailAddress,
@@ -256,7 +273,8 @@ class _LoginPageState extends State<LoginPage> {
               });
             },
           ),
-          EntradaTexto(
+          EntradaTextoTest(
+            longMinima: 8,
             estilo: inputPrimarystyle(
                 context, Icons.lock_outline, 'Contraseña', null),
             tipoEntrada: TextInputType.visiblePassword,
@@ -273,6 +291,11 @@ class _LoginPageState extends State<LoginPage> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
             child: BotonRestTest(
+                primerAction: () {
+                  if (formKey.currentState.validate()) {
+                    formKey.currentState.save();
+                  }
+                },
                 url: '${urlApi}login',
                 method: 'post',
                 formkey: formKey,
@@ -392,13 +415,13 @@ class _LoginPageState extends State<LoginPage> {
         .restService(
             '', '${urlApi}perfil/usuario', sharedPrefs.clientToken, 'get')
         .then((value) {
-          print(value);
+      print(value);
       if (value['status'] == 'server_true') {
         var jsonUser = jsonDecode(value['response']);
         userModel = UserModel.fromJson(jsonUser[1]);
         saveUserModel(userModel).then((value) {
-      
-          Navigator.pushNamedAndRemoveUntil(context, '/tiendas', (route) => false);
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/tiendas', (route) => false);
         });
       }
     });

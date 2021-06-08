@@ -6,7 +6,7 @@ import 'package:drugadmin/widget/assetImage_widget.dart';
 import 'package:flutter/material.dart';
 
 var itemsMenu =
-    '[{"icon": 62446, "title": "Tiendas", "action": "/tiendas"}, {"icon": 60988, "title": "Productos", "action": "/productos"},  {"icon": 62466, "title": "Usuarios", "action": "/usuarios"},  {"icon": 61821, "title": "Órdenes", "action": "/ordenes"},  {"icon": 983505, "title": "Banners", "action": "/banner"}, {"icon": 61849, "title": "Cerrar sesión", "action": "/login"}]';
+    '[{"icon": 62446, "title": "Tiendas", "action": "/tiendas"}, {"icon": 60988, "title": "Productos", "action": "/productos"},  {"icon": 62466, "title": "Usuarios", "action": "/usuarios"},  {"icon": 61821, "title": "Órdenes", "action": "/ordenes"},  {"icon": 983505, "title": "Banners", "action": "/banner"}, {"icon": 61849, "title": "Cerrar sesión", "action": "/logout"}]';
 
 class ResponsiveApp extends StatefulWidget {
   final screenWidht;
@@ -28,6 +28,8 @@ class ResponsiveApp extends StatefulWidget {
 }
 
 class _ResponsiveAppState extends State<ResponsiveApp> {
+  var jsonMenu = jsonDecode(itemsMenu.toString());
+
   @override
   void initState() {
     super.initState();
@@ -93,61 +95,53 @@ class _ResponsiveAppState extends State<ResponsiveApp> {
                   ],
                 ),
                 actions: [
-                  Row(
+                  /* Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      /* ListView.builder(
+                        itemCount: jsonMenu.length,
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 7.0),
+                            child: InkWell(
+                                onTap: () {
+                                  if (Uri.base.path !=
+                                      jsonMenu[index]['action']) {
+                                    Navigator.pushNamed(
+                                            context, jsonMenu[index]['action'])
+                                        .then((value) => setState(() {}));
+                                  }
+                                },
+                                child: Text('Mi cuenta')),
+                          );
+                        },
+                      ), */
+
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 7.0),
                         child: InkWell(
                             onTap: () => Navigator.pushNamedAndRemoveUntil(
-                                    context, '/tiendas', (route) => false)
+                                    context,
+                                    '/farmacia/miCuenta',
+                                    (route) => false)
                                 .then((value) => setState(() {})),
-                            child: Text('Tiendas')),
+                            child: Text('Mi cuenta')),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 7.0),
                         child: InkWell(
-                            onTap: () => Navigator.pushNamedAndRemoveUntil(
-                                    context, '/productos', (route) => false)
-                                .then((value) => setState(() {})),
-                            child: Text('Productos')),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 7.0),
-                        child: InkWell(
-                            onTap: () => Navigator.pushNamedAndRemoveUntil(
-                                    context, '/ordenes', (route) => false)
-                                .then((value) => setState(() {})),
-                            child: Text('Órdenes')),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 7.0),
-                        child: InkWell(
-                            onTap: () =>
-                                Navigator.pushNamed(context, '/usuarios')
-                                    .then((value) => setState(() {})),
-                            child: Text('Usuarios')),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 7.0),
-                        child: InkWell(
-                            onTap: () => Navigator.pushNamedAndRemoveUntil(
-                                    context, '/banner', (route) => false)
-                                .then((value) => setState(() {})),
-                            child: Text('Banners')),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 7.0),
-                        child: InkWell(
-                            onTap: () => logoutUser().then((value) {
-                                  Navigator.pushNamed(context, '/login')
-                                      .then((value) => setState(() {}));
-                                }),
-                            child: Text(
-                              'Cerrar sesión',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            )),
+                            onTap: () {
+                              if (Uri.base.path != '/farmacia/miTienda') {
+                                Navigator.pushNamed(
+                                        context, '/farmacia/miTienda')
+                                    .then((value) => setState(() {}));
+                              }
+                            },
+                            child: Text('Mi tienda')),
                       ),
                       // Padding(
                       //     padding: EdgeInsets.symmetric(
@@ -167,6 +161,44 @@ class _ResponsiveAppState extends State<ResponsiveApp> {
                       //       ],
                       //     )),
                     ],
+                  ) */
+                  Flexible(
+                    child: Container(
+                      width: 550,
+                        alignment: Alignment.bottomCenter,
+                        child: ListView.builder(
+                          itemCount: jsonMenu.length,
+                          physics: const NeverScrollableScrollPhysics(),
+                          scrollDirection: Axis.horizontal,
+                          /*  shrinkWrap: true, */
+                          itemBuilder: (BuildContext context, int index) {
+                            return Container(
+                              alignment: Alignment.center,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 7.0),
+                              child: InkWell(
+                                  onTap: () {
+                                    if (jsonMenu[index]['action'] == "/logout") {
+                                      logoutUser().then((value) =>
+                    Navigator.pushReplacementNamed(
+                        context, '/login'));
+                                    } else {
+                                      if (Uri.base.path !=
+                    jsonMenu[index]['action']) {
+                                        Navigator.pushNamed(context,
+                          jsonMenu[index]['action'])
+                      .then((value) => setState(() {}));
+                                      }
+                                    }
+                                  },
+                                  child: Padding(
+                                    padding: EdgeInsets.all(10),
+                                    child: Text(jsonMenu[index]['title']),
+                                  )),
+                            );
+                          },
+                        ),
+                      ),
                   )
                 ],
               )
@@ -311,17 +343,8 @@ class _DrawerUserState extends State<DrawerUser> {
                 context,
                 IconData(jsonMenu[index]['icon'], fontFamily: 'MaterialIcons'),
                 Colors.grey,
-                jsonMenu[index]['title'], () {
-              if (jsonMenu[index]['title'] == 'Cerrar sesión') {
-                logoutUser().then((value) {
-                  Navigator.pushNamed(context, jsonMenu[index]['action'])
-                      .then((value) => setState(() {}));
-                });
-              } else {
-                Navigator.pushNamed(context, jsonMenu[index]['action'])
-                    .then((value) => print('ok'));
-              }
-            });
+                jsonMenu[index]['title'],
+                jsonMenu[index]['action']);
           },
         ),
       ]),
@@ -330,14 +353,23 @@ class _DrawerUserState extends State<DrawerUser> {
 }
 
 Widget listMenu(BuildContext context, IconData iconMenu, Color colorIcon,
-    String titleMenu, action) {
+    String titleMenu, String action) {
   return ListTile(
       leading: Icon(iconMenu, color: colorIcon),
       title: Text(
         titleMenu,
         style: TextStyle(color: Colors.grey[700]),
       ),
-      onTap: action);
+      onTap: () {
+        if (action == "/logout") {
+          logoutUser().then(
+              (value) => Navigator.pushReplacementNamed(context, '/login'));
+        } else {
+          if (Uri.base.path != action) {
+            Navigator.pushNamed(context, action);
+          }
+        }
+      });
 }
 
 //Menu User

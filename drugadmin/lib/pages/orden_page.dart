@@ -337,7 +337,7 @@ class DataSource extends DataTableSource {
         estatusOrden = 'Desconocido';
     }
 
-    // estatus de orden
+    // estatus de envio
     switch (_myData['estatus_de_envio']) {
       case 'preparing':
         estatusEnvio = 'En preparación';
@@ -348,6 +348,7 @@ class DataSource extends DataTableSource {
       case 'delivered':
         estatusEnvio = 'Entregado';
         break;
+        
       default:
         estatusEnvio = 'Desconocido';
     }

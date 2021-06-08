@@ -168,7 +168,8 @@ class BotonRestTest extends StatefulWidget {
       this.habilitado = true,
       this.restriccion = false,
       this.restriccionStr,
-      this.restriccionStyle, this.primerAction})
+      this.restriccionStyle,
+      this.primerAction})
       : super(key: key);
 
   final Function(dynamic) action;
@@ -256,7 +257,9 @@ class _BotonRestTestState extends State<BotonRestTest> {
               onTap: () {
                 if (!load) {
                   if (widget.habilitado) {
-                    widget.primerAction();
+                    if (widget.primerAction != null) {
+                      widget.primerAction();
+                    }
                     if (widget.formkey != null) {
                       if (widget.formkey.currentState.validate()) {
                         widget.formkey.currentState.save();

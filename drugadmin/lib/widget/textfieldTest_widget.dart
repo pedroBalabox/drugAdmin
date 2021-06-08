@@ -8,13 +8,16 @@ class EntradaTextoTest extends StatefulWidget {
   final Function onEditingComplete;
   final bool habilitado;
   final int lineasMax;
-  final int longText;
+  final int longMaxima;
+  final int longMinima;
   final String valorInicial;
   final TextCapitalization textCapitalization;
   final InputDecoration estilo;
   final TextInputAction action;
   final TextInputType tipoEntrada;
   final GlobalKey<FormState> formkey;
+  final String validacionStr;
+  final bool requerido;
 
   EntradaTextoTest(
       {Key key,
@@ -23,13 +26,17 @@ class EntradaTextoTest extends StatefulWidget {
       this.onChanged,
       this.habilitado = true,
       this.lineasMax = 1,
-      this.longText,
+      this.longMaxima,
+      this.longMinima,
       this.valorInicial,
       this.textCapitalization = TextCapitalization.sentences,
       this.estilo,
       this.action = TextInputAction.next,
       this.tipoEntrada = TextInputType.name,
-      this.onEditingComplete, this.formkey})
+      this.onEditingComplete,
+      this.formkey,
+      this.validacionStr = 'Campo olbigatorio',
+      this.requerido = true})
       : super(key: key);
 
   @override
@@ -43,121 +50,53 @@ class _EntradaTextoTestState extends State<EntradaTextoTest> {
   @override
   Widget build(BuildContext context) {
     switch (widget.tipo) {
-      case "telefono":
+      case "texto":
         typeValidator = (value) {
-          if (value.isEmpty || value.length < 10) {
-            return 'Ingresa un teléfono';
+          if (widget.longMinima != null) {
+            if (value.isEmpty || value.length < widget.longMinima) {
+              return widget.validacionStr;
+            } else {
+              return null;
+            }
           } else {
-            return null;
+            if (value.isEmpty || value.length < 10) {
+              return widget.validacionStr;
+            } else {
+              return null;
+            }
           }
         };
-        maxCharacters = 20;
-        break;
-      case "correo":
-        typeValidator = (value) {
-          if (value.isEmpty || value.length < 5 || !value.contains('@')) {
-            return 'Ingresa un correo';
-          } else {
-            return null;
-          }
-        };
-        maxCharacters = 150;
-        break;
-      case "password":
-        typeValidator = (value) {
-          if (value.isEmpty || value.length < 8) {
-            return 'Ingresa tu contraseña';
-          } else {
-            return null;
-          }
-        };
-        maxCharacters = 150;
-        break;
-      case "nombre":
-        typeValidator = (value) {
-          if (value.isEmpty || value.length < 1) {
-            return 'Ingresa nombre';
-          } else {
-            return null;
-          }
-        };
-        maxCharacters = 150;
-        break;
-      case "apellido":
-        typeValidator = (value) {
-          if (value.isEmpty || value.length < 2) {
-            return 'Ingresa apellido';
-          } else {
-            return null;
-          }
-        };
-        maxCharacters = 150;
-        break;
-      case "textoCorto":
-        typeValidator = (value) {
-          if (value.isEmpty || value.length < 5) {
-            return 'Es necesario este campo';
-          } else {
-            return null;
-          }
-        };
-        maxCharacters = 500;
-        break;
-      case "textoLargo":
-        typeValidator = (value) {
-          if (value.isEmpty || value.length < 5) {
-            return 'Es necesario este campo';
-          } else {
-            return null;
-          }
-        };
-        maxCharacters = 3000;
-        break;
-      case "precio":
-        typeValidator = (value) {
-          if (value.isEmpty || value.length < 1) {
-            return 'Es necesario este campo';
-          } else {
-            return null;
-          }
-        };
-        maxCharacters = 10;
-        break;
-      case "numero":
-        typeValidator = (value) {
-          if (value.isEmpty || value.length < 1) {
-            return 'Es necesario este campo';
-          } else {
-            return null;
-          }
-        };
-        maxCharacters = 50;
-        break;
-      case "opcional":
-        maxCharacters = 500;
+        setState(() {
+          maxCharacters = widget.longMaxima == null ? 20 : widget.longMaxima;
+        });
         break;
       default:
         typeValidator = (value) {
-          if (value.isEmpty || value.length < 2) {
-            return 'Es necesario este campo';
+          if (widget.longMinima != null) {
+            if (value.isEmpty || value.length < widget.longMinima) {
+              return widget.validacionStr;
+            } else {
+              return null;
+            }
           } else {
-            return null;
+            if (value.isEmpty || value.length < 10) {
+              return widget.validacionStr;
+            } else {
+              return null;
+            }
           }
         };
-        maxCharacters = 50;
+        setState(() {
+          maxCharacters = widget.longMaxima == null ? 20 : widget.longMaxima;
+        });
     }
 
     return TextFormField(
       decoration: widget.estilo,
-      validator: typeValidator,
-      maxLength: widget.longText == null ? maxCharacters : widget.longText,
+      validator: widget.requerido ? typeValidator : null,
+      maxLength: maxCharacters,
       onSaved: widget.onSaved,
-      // onChanged: (value){
-      //    if (value != " ") {
-      //             widget.formkey.currentState.save();
-      //           }
-      // },
-      // onEditingComplete = widget.onEditingComplete,
+      onChanged: widget.onChanged,
       obscureText: widget.tipo == 'password' ? true : false,
       enabled: widget.habilitado,
       maxLines: widget.lineasMax,
@@ -165,7 +104,9 @@ class _EntradaTextoTestState extends State<EntradaTextoTest> {
       textCapitalization: widget.textCapitalization,
       textInputAction: widget.action,
       keyboardType: widget.tipoEntrada,
-      inputFormatters: widget.tipo == 'telefono' || widget.tipo == 'numero'
+      inputFormatters: widget.tipo == 'numeroINT' ||
+              widget.tipo == 'moneda' ||
+              widget.tipo == 'telefono'
           ? [
               // DecimalTextInputFormatter(),
               FilteringTextInputFormatter.allow(RegExp("[0-9 .]"))
