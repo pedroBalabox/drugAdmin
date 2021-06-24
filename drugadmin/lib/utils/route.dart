@@ -43,12 +43,28 @@ class AddDetailArguments {
   AddDetailArguments(this.jsonData);
 }
 
+class CatDetailArguments {
+  final dynamic jsonData;
+
+  CatDetailArguments(this.jsonData);
+}
+
+class EditDetailArguments {
+  final dynamic jsonData;
+
+  EditDetailArguments(this.jsonData);
+}
+
 var rutasDrug = {
   '/login': (context) => LobbyAdmin(ruta: '/login'),
-  '/tiendas': (context) => LobbyAdmin(ruta: '/tiendas'),
+  '/farmacias': (context) => LobbyAdmin(ruta: '/farmacias'),
   '/productos': (context) =>LobbyAdmin(ruta: '/productos'),
   '/ordenes': (context) => LobbyAdmin(ruta: '/ordenes'),
   '/usuarios': (context) => LobbyAdmin(ruta: '/usuarios'),
+  '/categorias': (context) => LobbyAdmin(ruta: '/categorias'),
+  '/etiquetas': (context) => LobbyAdmin(ruta: '/etiquetas'),
   '/banner': (context) => LobbyAdmin(ruta: '/banner'),
   '/agregarbanner': (context) => LobbyAdmin(ruta: '/agregarbanner'),
+  '/agregarCategoria': (context) => LobbyAdmin(ruta: '/agregarCategoria'),
+  '/agregarEtiqueta': (context) => LobbyAdmin(ruta: '/agregarEtiqueta'),
 };

@@ -43,6 +43,8 @@ class _TabAceptadaState extends State<TiendaDetalles> {
   Status statusValue;
   List<Status> listaStatus = [];
 
+
+
   String logoUrl;
 
   @override
@@ -402,6 +404,7 @@ class _TabAceptadaState extends State<TiendaDetalles> {
             textCapitalization: TextCapitalization.words,
             tipo: 'typeValidator',
           ),
+          
         ],
       ),
     );

@@ -11,6 +11,7 @@ import 'package:drugadmin/widget/drawerVendedor_widget.dart';
 import 'package:drugadmin/widget/month_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
+import 'package:intl/intl.dart';
 
 class BannerPage extends StatefulWidget {
   BannerPage({Key key}) : super(key: key);
@@ -75,8 +76,10 @@ class _BannerPageState extends State<BannerPage> {
     _handleSearchStart();
     if (_isSearching != null) {
       for (int i = 0; i < orden.length; i++) {
-        String dataNombre = orden[i]['nombre'];
-        if (dataNombre.toLowerCase().contains(searchText.toLowerCase())) {
+        String dataNombre = orden[i]['titulo'];
+        String dataDate = orden[i]['fecha_de_exposicion'].toString();
+        if (dataNombre.toLowerCase().contains(searchText.toLowerCase()) ||
+            dataDate.toLowerCase().contains(searchText.toLowerCase())) {
           setState(() {
             searchList.add(orden[i]);
           });
@@ -238,7 +241,7 @@ class _BannerPageState extends State<BannerPage> {
                 borderSide: BorderSide.none,
                 borderRadius: BorderRadius.circular(0)),
             hintStyle: TextStyle(),
-            hintText: 'Buscar tienda....',
+            hintText: 'Buscar banner....',
             fillColor: bgGrey,
             filled: true),
       ),
@@ -328,8 +331,18 @@ class DataSource extends DataTableSource {
             )),
           )),
           DataCell(Text('${_myData['titulo']}')),
-          DataCell(Text('${_myData['descripcion']}')),
-          DataCell(Text('${_myData['fecha_de_exposicion']}')),
+          DataCell(Container(
+            width: 200,
+            child: Text(
+              '${_myData['descripcion']}',
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+          )),
+          DataCell(_myData['fecha_de_exposicion'] == null
+              ? Container()
+              : Text(DateFormat('yyyy-MM')
+                  .format(DateTime.parse(_myData['fecha_de_exposicion'])))),
           DataCell(Text('${_myData['posicion']}')),
         ]);
   }

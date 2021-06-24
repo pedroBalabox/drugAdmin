@@ -61,6 +61,9 @@ Gradient gradientDrug = LinearGradient(
     // end: Alignment.bottomLeft,
     colors: [Color(0xff00DAC4), Color(0xff114667), Color(0xffF836FF)]);
 
+Gradient gradientGray =
+    LinearGradient(colors: [const Color(0xff525252), const Color(0xff6f6f6f)]);
+
 // padding
 var smallPadding = 10.0;
 var medPadding = 30.0;
@@ -100,7 +103,6 @@ BoxDecoration estiloValidar = BoxDecoration(boxShadow: [
     ),
   )
 ], gradient: gradientGreen);
-
 
 BoxDecoration estiloRechazar = BoxDecoration(boxShadow: [
   BoxShadow(
@@ -151,3 +153,15 @@ inputPrimarystyle(context, icon, labelText, hintText) {
         ),
       ));
 }
+
+BoxDecoration estiloBotonDisabled = BoxDecoration(boxShadow: [
+  BoxShadow(
+    color: Color.fromRGBO(0, 0, 0, 0.1),
+    blurRadius: 5.0, // soften the shadow
+    spreadRadius: 1.0, //extend the shadow
+    offset: Offset(
+      0.0, // Move to right 10  horizontally
+      3.0, // Move to bottom 10 Vertically867
+    ),
+  )
+], gradient: gradientGray);

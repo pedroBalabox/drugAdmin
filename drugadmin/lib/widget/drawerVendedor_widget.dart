@@ -6,7 +6,7 @@ import 'package:drugadmin/widget/assetImage_widget.dart';
 import 'package:flutter/material.dart';
 
 var itemsMenu =
-    '[{"icon": 62446, "title": "Tiendas", "action": "/tiendas"}, {"icon": 60988, "title": "Productos", "action": "/productos"},  {"icon": 62466, "title": "Usuarios", "action": "/usuarios"},  {"icon": 61821, "title": "Órdenes", "action": "/ordenes"},  {"icon": 983505, "title": "Banners", "action": "/banner"}, {"icon": 61849, "title": "Cerrar sesión", "action": "/logout"}]';
+    '[{"icon": 62446, "title": "Farmacias", "action": "/farmacias"}, {"icon": 60988, "title": "Solicitudes", "action": "/productos"},  {"icon": 62466, "title": "Usuarios", "action": "/usuarios"},  {"icon": 61821, "title": "Órdenes", "action": "/ordenes"},  {"icon": 983505, "title": "Banners", "action": "/banner"}, {"icon": 60988, "title": "Categorias", "action": "/categorias"}, {"icon": 60988, "title": "Etiquetas", "action": "/etiquetas"}, {"icon": 61849, "title": "Cerrar sesión", "action": "/logout"}]';
 
 class ResponsiveApp extends StatefulWidget {
   final screenWidht;
@@ -67,7 +67,9 @@ class _ResponsiveAppState extends State<ResponsiveApp> {
                     SizedBox(
                       width: 7,
                     ),
-                    widget.title != null ? Text(widget.title) : Container(),
+                    widget.title != null
+                        ? Flexible(child: Text(widget.title))
+                        : Container(),
                     // : Flexible(
                     //     flex: 3,
                     //     child: Container(
@@ -164,41 +166,41 @@ class _ResponsiveAppState extends State<ResponsiveApp> {
                   ) */
                   Flexible(
                     child: Container(
-                      width: 550,
-                        alignment: Alignment.bottomCenter,
-                        child: ListView.builder(
-                          itemCount: jsonMenu.length,
-                          physics: const NeverScrollableScrollPhysics(),
-                          scrollDirection: Axis.horizontal,
-                          /*  shrinkWrap: true, */
-                          itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                              alignment: Alignment.center,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 7.0),
-                              child: InkWell(
-                                  onTap: () {
-                                    if (jsonMenu[index]['action'] == "/logout") {
-                                      logoutUser().then((value) =>
-                    Navigator.pushReplacementNamed(
-                        context, '/login'));
-                                    } else {
-                                      if (Uri.base.path !=
-                    jsonMenu[index]['action']) {
-                                        Navigator.pushNamed(context,
-                          jsonMenu[index]['action'])
-                      .then((value) => setState(() {}));
-                                      }
+                      width: 780,
+                      alignment: Alignment.bottomCenter,
+                      child: ListView.builder(
+                        itemCount: jsonMenu.length,
+                        physics: const NeverScrollableScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        /*  shrinkWrap: true, */
+                        itemBuilder: (BuildContext context, int index) {
+                          return Container(
+                            alignment: Alignment.center,
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 7.0),
+                            child: InkWell(
+                                onTap: () {
+                                  if (jsonMenu[index]['action'] == "/logout") {
+                                    logoutUser().then((value) =>
+                                        Navigator.pushReplacementNamed(
+                                            context, '/login'));
+                                  } else {
+                                    if (Uri.base.path !=
+                                        jsonMenu[index]['action']) {
+                                      Navigator.pushNamed(context,
+                                              jsonMenu[index]['action'])
+                                          .then((value) => setState(() {}));
                                     }
-                                  },
-                                  child: Padding(
-                                    padding: EdgeInsets.all(10),
-                                    child: Text(jsonMenu[index]['title']),
-                                  )),
-                            );
-                          },
-                        ),
+                                  }
+                                },
+                                child: Padding(
+                                  padding: EdgeInsets.all(10),
+                                  child: Text(jsonMenu[index]['title']),
+                                )),
+                          );
+                        },
                       ),
+                    ),
                   )
                 ],
               )

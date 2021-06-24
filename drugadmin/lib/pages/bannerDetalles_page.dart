@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:codigojaguar/codigojaguar.dart';
 import 'package:drugadmin/model/banner_model.dart';
 import 'package:drugadmin/service/restFunction.dart';
 import 'package:drugadmin/service/sharedPref.dart';
@@ -8,12 +9,13 @@ import 'package:drugadmin/utils/globals.dart';
 import 'package:drugadmin/utils/theme.dart';
 import 'package:drugadmin/widget/drawerVendedor_widget.dart';
 import 'package:drugadmin/widget/testRest.dart';
-import 'package:drugadmin/widget/textfieldTest_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
+import 'package:month_picker_dialog/month_picker_dialog.dart';
+import 'package:intl/intl.dart';
 
 class BannerDetalles extends StatefulWidget {
   static const routeName = '/detalles-banner';
@@ -41,6 +43,12 @@ class _TabAceptadaState extends State<BannerDetalles> {
 
   var imagePathDesktop;
   var imagePathMobile;
+
+  bool correcto = false;
+
+  String correctoStr = 'Banner actualizado correctamente';
+
+  String fechaBanner;
 
   @override
   void initState() {
@@ -228,10 +236,12 @@ class _TabAceptadaState extends State<BannerDetalles> {
                     child: Column(
                   children: [
                     InkWell(
-                      onTap: () async {
-                        await pickImage('mobile');
-                        setState(() {});
-                      },
+                      onTap: correcto
+                          ? () {}
+                          : () async {
+                              await pickImage('mobile');
+                              setState(() {});
+                            },
                       child: Container(
                         height: 200,
                         decoration: BoxDecoration(
@@ -248,11 +258,14 @@ class _TabAceptadaState extends State<BannerDetalles> {
                             )),
                       ),
                     ),
-                    Text(
-                      'Selecciona un banner para móvil (300x300 px)',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.black54, fontSize: 13),
-                    ),
+                    correcto
+                        ? Container()
+                        : Text(
+                            'Selecciona un banner para móvil (300x300 px)',
+                            textAlign: TextAlign.center,
+                            style:
+                                TextStyle(color: Colors.black54, fontSize: 13),
+                          ),
                   ],
                 )),
               ],
@@ -294,121 +307,199 @@ class _TabAceptadaState extends State<BannerDetalles> {
       key: formKey,
       child: Column(
         children: [
-          // TODO: boton para fecha
-          // EntradaTextoTest(
-          //   habilitado: false,
-          //   valorInicial: bannerModel.fechaDeExposicion.toString(),
-          //   estilo: inputPrimarystyle(
-          //       context, Icons.store_outlined, 'Nombre comercial', null),
-          //   tipoEntrada: TextInputType.emailAddress,
-          //   textCapitalization: TextCapitalization.words,
-          //   tipo: 'typeValidator',
-          // ),
-          EntradaTextoTest(
-            formkey: formKey,
+          Container(
+            width: double.infinity,
+            margin: EdgeInsets.only(top: 15),
+            padding: EdgeInsets.all(5),
+            decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(5)),
+            child: InkWell(
+                onTap: () {
+                  !correcto ? _selectDate(context) : print('ok');
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      "Fecha de exibición",
+                      style: TextStyle(color: Colors.black54, fontSize: 15),
+                    ),
+                    SizedBox(
+                      height: 2,
+                    ),
+                    Text(
+                      bannerModel.fechaDeExposicion == null
+                          ? 'Selecciona una fecha'
+                          : DateFormat('yyyy-MM').format(
+                              DateTime.parse(bannerModel.fechaDeExposicion)),
+                      style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15),
+                    )
+                  ],
+                )),
+          ),
+          EntradaTexto(
+            habilitado: !correcto,
             valorInicial: bannerModel.titulo,
+            longMinima: 1,
+            longMaxima: 100,
             estilo:
                 inputPrimarystyle(context, Icons.star_outline, 'Título', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
-            tipo: 'typeValidator',
-            onSaved: (value) => setState(() {
-              bannerModel.titulo = value;
-            }),
+            onChanged: (value) {
+              setState(() {
+                bannerModel.titulo = value;
+              });
+            },
           ),
-          EntradaTextoTest(
-            formkey: formKey,
+          EntradaTexto(
+            habilitado: !correcto,
             valorInicial: bannerModel.descripcion,
+            longMinima: 1,
+            longMaxima: 500,
+            lineasMax: 2,
             estilo: inputPrimarystyle(
                 context, Icons.star_outline, 'Descripción', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
-            tipo: 'typeValidator',
-            onSaved: (value) => setState(() {
-              bannerModel.descripcion = value;
-            }),
+            onChanged: (value) {
+              setState(() {
+                bannerModel.descripcion = value;
+              });
+            },
           ),
-          EntradaTextoTest(
-              formkey: formKey,
-              valorInicial: bannerModel.posicion.toString(),
-              estilo: inputPrimarystyle(
-                  context, Icons.keyboard_arrow_up, 'Posición', null),
-              tipoEntrada: TextInputType.name,
-              textCapitalization: TextCapitalization.words,
-              tipo: 'numero',
-              onSaved: (value) => setState(() {
-                    bannerModel.posicion = value;
-                  })),
-          EntradaTextoTest(
-            formkey: formKey,
+          EntradaTexto(
+            habilitado: !correcto,
+            valorInicial: bannerModel.posicion,
+            longMinima: 1,
+            longMaxima: 50,
+            tipo: 'numeroINT',
+            estilo: inputPrimarystyle(
+                context, Icons.star_outline, 'Posición', null),
+            tipoEntrada: TextInputType.visiblePassword,
+            textCapitalization: TextCapitalization.words,
+            onChanged: (value) {
+              setState(() {
+                bannerModel.posicion = value;
+              });
+            },
+          ),
+          EntradaTexto(
+            habilitado: !correcto,
             valorInicial: bannerModel.linkExterno,
+            longMinima: 1,
+            longMaxima: 100,
             estilo: inputPrimarystyle(
-                context, Icons.attach_file_outlined, 'Link externo', null),
+                context, Icons.star_outline, 'Link externo', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
-            tipo: 'typeValidator',
-            onSaved: (value) => setState(() {
-              bannerModel.linkExterno = value;
-            }),
-          ),
-          EntradaTextoTest(
-            formkey: formKey,
-            valorInicial: bannerModel.idDeFarmacia,
-            estilo: inputPrimarystyle(
-                context, Icons.store_outlined, 'Farmacia', null),
-            tipoEntrada: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            tipo: 'typeValidator',
-            onSaved: (value) => setState(() {
-              bannerModel.idDeFarmacia = value;
-            }),
+            onChanged: (value) {
+              setState(() {
+                bannerModel.linkExterno = value;
+              });
+            },
           ),
           SizedBox(height: smallPadding * 2),
-          BotonRestTest(
-            restriccion: true,
-            restriccionStr: 'Falta información',
-            habilitado: bannerModel.imagenMovil == null
-                ? false
-                : bannerModel.imagenEscritorio == null
-                    ? false
-                    : true,
-            token: sharedPrefs.clientToken,
-            url: '${urlApi}actualizar/banner',
-            formkey: formKey,
-            arrayData: {
-              "id_de_banner": bannerModel.idDeBanner,
-              "titulo": bannerModel.titulo,
-              "descripcion": bannerModel.descripcion,
-              "imagen_escritorio": imagePathDesktop == null
-                  ? null
-                  : bannerModel.imagenEscritorio,
-              "imagen_movil":
-                  imagePathMobile == null ? null : bannerModel.imagenMovil,
-              "fecha_de_exposicion": "2021-06-15",
-              "posicion": int.parse(bannerModel.posicion),
-              "link_externo": bannerModel.linkExterno,
-              "id_de_farmacia": bannerModel.idDeFarmacia,
-            },
-            method: 'post',
-            action: (value) => print(value),
-            showSuccess: true,
-            contenido: Padding(
-              padding: EdgeInsets.symmetric(horizontal: smallPadding),
-              child: Text(
-                'Guardar',
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.fade,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ),
-            estilo: estiloBotonPrimary,
-          )
+          correcto
+              ? Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.check_circle,
+                      size: 17,
+                      color: Colors.green.withOpacity(0.8),
+                    ),
+                    SizedBox(
+                      width: 3,
+                    ),
+                    Flexible(
+                      child: Text(
+                        correctoStr,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 17,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              : BotonRestTest(
+                  restriccion: true,
+                  restriccionStr: 'Falta información',
+                  habilitado: bannerModel.imagenMovil == null
+                      ? false
+                      : bannerModel.imagenEscritorio == null
+                          ? false
+                          : true,
+                  token: sharedPrefs.clientToken,
+                  url: '${urlApi}actualizar/banner',
+                  formkey: formKey,
+                  arrayData: {
+                    "id_de_banner": bannerModel.idDeBanner,
+                    "titulo": bannerModel.titulo,
+                    "descripcion": bannerModel.descripcion,
+                    "imagen_escritorio": imagePathDesktop == null
+                        ? null
+                        : bannerModel.imagenEscritorio,
+                    "imagen_movil": imagePathMobile == null
+                        ? null
+                        : bannerModel.imagenMovil,
+                    "fecha_de_exposicion": bannerModel.fechaDeExposicion,
+                    "posicion": bannerModel.posicion == '' ||
+                            bannerModel.posicion == null ||
+                            bannerModel.posicion == ' '
+                        ? null
+                        : bannerModel.posicion == '0'
+                            ? 1
+                            : int.parse(bannerModel.posicion),
+                    "link_externo": bannerModel.linkExterno,
+                    "id_de_farmacia": bannerModel.idDeFarmacia,
+                  },
+                  method: 'post',
+                  primerAction: () {},
+                  action: (value) {
+                    setState(() {
+                      correcto = true;
+                    });
+                  },
+                  showSuccess: true,
+                  contenido: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: smallPadding),
+                    child: Text(
+                      'Guardar',
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.fade,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                  estilo: estiloBotonPrimary,
+                )
         ],
       ),
     );
+  }
+
+  Future<Null> _selectDate(BuildContext context) async {
+    final DateTime picked = await showMonthPicker(
+        context: context,
+        initialDate: DateTime.parse(bannerModel.fechaDeExposicion),
+        firstDate: DateTime(DateTime.now().year - 10),
+        lastDate: DateTime(DateTime.now().year + 2));
+    if (picked != null) {
+      setState(() {
+        bannerModel.fechaDeExposicion = DateFormat('yyyy-MM-dd').format(picked);
+      });
+    }
   }
 }

@@ -308,7 +308,7 @@ class DataSource extends DataTableSource {
           //           _myData,
           //         ))
           //     .whenComplete(() => Navigator.pushNamedAndRemoveUntil(
-          //         _context, '/tiendas', (route) => false));
+          //         _context, '/farmacias', (route) => false));
         },
         cells: <DataCell>[
           DataCell(CircleAvatar(
@@ -330,7 +330,7 @@ class DataSource extends DataTableSource {
                             _myData,
                           ))
                       .whenComplete(() => Navigator.pushNamedAndRemoveUntil(
-                          _context, '/tiendas', (route) => false)),
+                          _context, '/farmacias', (route) => false)),
               estilo: estiloBotonSecundary,
               contenido: Padding(
                 padding: EdgeInsets.all(0),
@@ -348,7 +348,7 @@ class DataSource extends DataTableSource {
                             _myData,
                           ))
                       .whenComplete(() => Navigator.pushNamedAndRemoveUntil(
-                          _context, '/tiendas', (route) => false)),
+                          _context, '/farmacias', (route) => false)),
               estilo: estiloBotonPrimary,
               contenido: Padding(
                 padding: EdgeInsets.all(0),

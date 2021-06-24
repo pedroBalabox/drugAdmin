@@ -219,7 +219,7 @@ class _LoginPageState extends State<LoginPage> {
                                   gcolor: gradientWhite,
                                   mainText: 'Aviso de privacidad',
                                   textWhite: false,
-                                  pressed: () => print('ok'),
+                                  pressed: () {},
                                 ),
                               ),
                               Flexible(
@@ -230,7 +230,7 @@ class _LoginPageState extends State<LoginPage> {
                                   gcolor: gradientBlueLight,
                                   mainText: 'Condiciones de uso',
                                   textWhite: true,
-                                  pressed: () => print('ok'),
+                                  pressed: () {},
                                 ),
                               ),
                             ],
@@ -275,6 +275,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           EntradaTextoTest(
             longMinima: 8,
+            longMaxima: 50,
             estilo: inputPrimarystyle(
                 context, Icons.lock_outline, 'Contraseña', null),
             tipoEntrada: TextInputType.visiblePassword,
@@ -335,9 +336,13 @@ class _LoginPageState extends State<LoginPage> {
 
   _infoContainer(constraints) {
     return Padding(
-      padding: EdgeInsets.all(constraints.maxWidth < 700 ? 30 : 55.0),
+      padding: EdgeInsets.symmetric(
+          horizontal: constraints.maxWidth < 700 ? 30 : 55.0,
+          vertical: constraints.maxWidth < 700
+              ? 30
+              : MediaQuery.of(context).size.width / 8),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        // mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Flexible(
@@ -377,7 +382,7 @@ class _LoginPageState extends State<LoginPage> {
                           fontWeight: FontWeight.w400,
                           color: Colors.white)),
                 ),
-          SizedBox(height: smallPadding),
+          SizedBox(height: medPadding),
           constraints.maxWidth < 700
               ? Container()
               : Row(
@@ -389,7 +394,7 @@ class _LoginPageState extends State<LoginPage> {
                         gcolor: gradientWhite,
                         mainText: 'Aviso de privacidad',
                         textWhite: false,
-                        pressed: () => print('ok'),
+                        pressed: () {},
                       ),
                     ),
                     Flexible(flex: 2, child: SizedBox(width: medPadding)),
@@ -399,7 +404,7 @@ class _LoginPageState extends State<LoginPage> {
                         gcolor: gradientBlueLight,
                         mainText: 'Condiciones de uso',
                         textWhite: true,
-                        pressed: () => print('ok'),
+                        pressed: () {},
                       ),
                     ),
                   ],
@@ -421,7 +426,7 @@ class _LoginPageState extends State<LoginPage> {
         userModel = UserModel.fromJson(jsonUser[1]);
         saveUserModel(userModel).then((value) {
           Navigator.pushNamedAndRemoveUntil(
-              context, '/tiendas', (route) => false);
+              context, '/farmacias', (route) => false);
         });
       }
     });

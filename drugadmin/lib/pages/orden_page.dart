@@ -66,8 +66,10 @@ class _OrdenPageState extends State<OrdenPage> {
     _handleSearchStart();
     if (_isSearching != null) {
       for (int i = 0; i < orden.length; i++) {
-        String dataNombre = orden[i]['folio'];
-        if (dataNombre.toLowerCase().contains(searchText.toLowerCase())) {
+        String dataOrden = orden[i]['id_de_orden'];
+        String dataCliente = orden[i]['cliente'];
+        if (dataOrden.toLowerCase().contains(searchText.toLowerCase()) ||
+            dataCliente.toLowerCase().contains(searchText.toLowerCase())) {
           setState(() {
             searchList.add(orden[i]);
           });
@@ -348,7 +350,7 @@ class DataSource extends DataTableSource {
       case 'delivered':
         estatusEnvio = 'Entregado';
         break;
-        
+
       default:
         estatusEnvio = 'Desconocido';
     }

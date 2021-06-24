@@ -1,7 +1,5 @@
 import 'dart:convert';
-
-import 'package:codigojaguar/codigojaguar.dart';
-import 'package:drugadmin/pages/addPorducts_page.dart';
+import 'package:drugadmin/pages/CatDetalles_page.dart';
 import 'package:drugadmin/service/restFunction.dart';
 import 'package:drugadmin/service/sharedPref.dart';
 import 'package:drugadmin/utils/globals.dart';
@@ -9,28 +7,19 @@ import 'package:drugadmin/utils/route.dart';
 import 'package:drugadmin/utils/theme.dart';
 import 'package:drugadmin/widget/drawerVendedor_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 
-import 'editProduct_page.dart';
-
-class VerProductos extends StatefulWidget {
-  static const routeName = '/farmacia-verProductos';
-
-  final dynamic jsonData;
-
-  VerProductos({Key key, this.jsonData}) : super(key: key);
+class LabelPage extends StatefulWidget {
+  LabelPage({Key key}) : super(key: key);
 
   @override
-  _VerProductosState createState() => _VerProductosState();
+  _LabelPageState createState() => _LabelPageState();
 }
 
-class _VerProductosState extends State<VerProductos> {
-  var orden;
-
-  var jsonProdcut;
+class _LabelPageState extends State<LabelPage> {
+  var category;
 
   RestFun rest = RestFun();
-
-  String filterValue = 'Activas';
 
   String errorStr;
   bool load = true;
@@ -41,29 +30,27 @@ class _VerProductosState extends State<VerProductos> {
 
   DateTime selectedDate = DateTime.now();
 
-  bool cargarProductosRow = false;
-
   @override
   void initState() {
     super.initState();
-    print('----' + widget.jsonData.jsonData.toString());
-    sharedPrefs.init().then((value) => getProductos());
+    sharedPrefs.init().then((value) => getCategory());
   }
 
-  getProductos() async {
-    // setState(() {
-    //   load = true;
-    // });
-    var arrayData = {"farmacia_id": widget.jsonData.jsonData['farmacia_id']};
+  getCategory() async {
+    setState(() {
+      load = true;
+    });
+    // var arrayData = {"fecha_de_exposicion": selectedDate};
     await rest
-        .restService(arrayData, '${urlApi}farmacia/mis-productos',
-            sharedPrefs.clientToken, 'post')
+        .restService(
+            null, '${urlApi}obtener/etiquetas', sharedPrefs.clientToken, 'get')
         .then((value) {
       if (value['status'] == 'server_true') {
-        var productosResp = value['response'];
-        productosResp = jsonDecode(productosResp)[1];
+        var dataResp = value['response'];
+        dataResp = jsonDecode(dataResp)[1];
         setState(() {
-          jsonProdcut = productosResp['productos'];
+          category = dataResp['tags'];
+          // category = dataResp.values.toList();
           load = false;
         });
       } else {
@@ -76,43 +63,15 @@ class _VerProductosState extends State<VerProductos> {
     });
   }
 
-  // checkBoolRow() async {
-  //   print('---' + DataSource.onTapProduct.toString());
-  //   var arrayData = {"farmacia_id": widget.jsonData.jsonData['farmacia_id']};
-  //   await rest
-  //       .restService(arrayData, '${urlApi}farmacia/mis-productos',
-  //           sharedPrefs.clientToken, 'post')
-  //       .then((value) {
-  //     if (value['status'] == 'server_true') {
-  //       var productosResp = value['response'];
-  //       productosResp = jsonDecode(productosResp)[1];
-  //       setState(() {
-  //         jsonProdcut = productosResp['productos'];
-  //         load = false;
-  //       });
-  //     } else {
-  //       setState(() {
-  //         load = false;
-  //         error = true;
-  //         errorStr = value['message'];
-  //       });
-  //     }
-  //   });
-  //   // setState(() {
-  //   //   cargarProductosRow = DataSource.onTapProduct;
-  //   // });
-  //   // () {};
-  // }
-
   void searchOperation(String searchText) {
     searchList.clear();
     _handleSearchStart();
     if (_isSearching != null) {
-      for (int i = 0; i < jsonProdcut.length; i++) {
-        String dataNombre = jsonProdcut[i]['nombre'];
+      for (int i = 0; i < category.length; i++) {
+        String dataNombre = category[i]['nombre'];
         if (dataNombre.toLowerCase().contains(searchText.toLowerCase())) {
           setState(() {
-            searchList.add(jsonProdcut[i]);
+            searchList.add(category[i]);
           });
         }
       }
@@ -128,10 +87,10 @@ class _VerProductosState extends State<VerProductos> {
   @override
   Widget build(BuildContext context) {
     return ResponsiveApp(
-        drawerMenu: false,
+        drawerMenu: true,
         screenWidht: MediaQuery.of(context).size.width,
         body: bodyTiendas(),
-        title: "Productos de ${widget.jsonData.jsonData['nombre']}");
+        title: "Etiquetas");
   }
 
   Widget bodyTiendas() {
@@ -156,7 +115,7 @@ class _VerProductosState extends State<VerProductos> {
                               : medPadding * .5),
                           color: bgGrey,
                           width: MediaQuery.of(context).size.width / 6,
-                          child: misVentas(),
+                          child: misCategorias(),
                         ),
                       ]),
                     ),
@@ -165,7 +124,7 @@ class _VerProductosState extends State<VerProductos> {
     );
   }
 
-  misVentas() {
+  misCategorias() {
     return PaginatedDataTable(
         // headingRowHeight: 180,
         // rowsPerPage: 7,
@@ -190,11 +149,8 @@ class _VerProductosState extends State<VerProductos> {
         actions: [
           IconButton(
               icon: Icon(Icons.add),
-              onPressed: () =>
-                  Navigator.pushNamed(context, AddProducts.routeName,
-                      arguments: AddDetailArguments(
-                        widget.jsonData.jsonData,
-                      )).then((value) => getProductos()))
+              onPressed: () => Navigator.pushNamed(context, '/agregarEtiqueta')
+                  .then((value) => getCategory()))
           // SimpleButtom(
           //     mainText: 'mainText',
           //     pressed: () => _buildMaterialDatePicker(context))
@@ -202,11 +158,25 @@ class _VerProductosState extends State<VerProductos> {
         showCheckboxColumn: false,
         columns: kTableColumns,
         source: DataSource(
-            mycontext: context,
-            dataData: _isSearching ? searchList : jsonProdcut,
-            farmaciaData: widget.jsonData.jsonData)
+            mycontext: context, dataData: _isSearching ? searchList : category)
         // dataCat: searchList.length == 0 ? userData : searchList),
         );
+  }
+
+  _buildMaterialDatePicker(BuildContext context) async {
+    showMonthPicker(
+      context: context,
+      firstDate: DateTime(DateTime.now().year - 1),
+      lastDate: DateTime(DateTime.now().year + 2),
+      initialDate: DateTime.now(),
+      locale: Locale("es"),
+    ).then((date) {
+      if (date != null) {
+        setState(() {
+          selectedDate = date;
+        });
+      }
+    });
   }
 
   search() {
@@ -225,7 +195,7 @@ class _VerProductosState extends State<VerProductos> {
                 borderSide: BorderSide.none,
                 borderRadius: BorderRadius.circular(0)),
             hintStyle: TextStyle(),
-            hintText: 'Buscar producto....',
+            hintText: 'Buscar etiqueta....',
             fillColor: bgGrey,
             filled: true),
       ),
@@ -243,43 +213,13 @@ const kTableColumns = <DataColumn>[
   ),
   DataColumn(
     label: Text(
-      'Marca',
-      style: TextStyle(fontWeight: FontWeight.w900),
-    ),
-  ),
-  DataColumn(
-    label: Text(
       'Descripción',
       style: TextStyle(fontWeight: FontWeight.w900),
     ),
   ),
   DataColumn(
     label: Text(
-      'Stock',
-      style: TextStyle(fontWeight: FontWeight.w900),
-    ),
-  ),
-  DataColumn(
-    label: Text(
-      'Precio',
-      style: TextStyle(fontWeight: FontWeight.w900),
-    ),
-  ),
-  DataColumn(
-    label: Text(
-      'Precio mayoreo',
-      style: TextStyle(fontWeight: FontWeight.w900),
-    ),
-  ),
-  DataColumn(
-    label: Text(
-      'Posición descuento',
-      style: TextStyle(fontWeight: FontWeight.w900),
-    ),
-  ),
-  DataColumn(
-    label: Text(
-      '',
+      'Fecha de creación',
       style: TextStyle(fontWeight: FontWeight.w900),
     ),
   ),
@@ -289,15 +229,11 @@ const kTableColumns = <DataColumn>[
 class DataSource extends DataTableSource {
   BuildContext _context;
   dynamic _dataData;
-  dynamic _farmaciaData;
-
   DataSource({
     @required dynamic dataData,
     @required BuildContext mycontext,
-    @required dynamic farmaciaData,
   })  : _dataData = dataData,
         _context = mycontext,
-        _farmaciaData = farmaciaData,
         assert(dataData != null);
 
   // DataSource({@required User userData}) : _vendedorData = userData;
@@ -319,30 +255,15 @@ class DataSource extends DataTableSource {
         index: index, // DONT MISS THIS
         onSelectChanged: (bool value) {
           // _dialogCall(_context, _myData.categoria_id, _myData);
-          // Navigator.pushNamed(_context, BannerDetalles.routeName,
-          //         arguments: BannerDetailArguments(
-          //           _myData,
-          //         ))
-          //     .whenComplete(() => Navigator.pushNamedAndRemoveUntil(
-          //         _context, '/banner', (route) => false));
+          Navigator.pushNamed(_context, DetallesCat.routeName,
+                  arguments: CatDetailArguments(
+                    {"type": "label", "data": _myData},
+                  ))
+              .whenComplete(() => Navigator.pushNamedAndRemoveUntil(
+                  _context, '/etiquetas', (route) => false));
         },
         cells: <DataCell>[
-          DataCell(Container(
-            width: 100,
-            child: Text(
-              '${_myData['nombre']}',
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-          )),
-          DataCell(Container(
-            width: 100,
-            child: Text(
-              '${_myData['marca']}',
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-          )),
+          DataCell(Text('${_myData['nombre']}')),
           DataCell(Container(
             width: 200,
             child: Text(
@@ -351,40 +272,7 @@ class DataSource extends DataTableSource {
               overflow: TextOverflow.ellipsis,
             ),
           )),
-          DataCell(Text('${_myData['stock']}')),
-          DataCell(Text('\$${_myData['precio']}')),
-          DataCell(Text('\$${_myData['precio_mayoreo']}')),
-          DataCell(Text('\$${_myData['precio_con_descuento']}')),
-          DataCell(Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5.0),
-            child: BotonSimple(
-              action: () {
-                Navigator.pushNamed(_context, EditarProducto.routeName,
-                        arguments: EditDetailArguments(_myData))
-                    .whenComplete(() {
-                  Navigator.pushNamedAndRemoveUntil(
-                    _context,
-                    VerProductos.routeName,
-                    (route) => true,
-                    arguments: VerProductosDetailArguments(
-                      _farmaciaData,
-                    ),
-                  ).then((value) => Navigator.pop(_context));
-                });
-              },
-              //       .then((value) => action);
-              //   onTapProduct = true;
-              // },
-              // .whenComplete(() => Navigator.pushNamedAndRemoveUntil(
-              //     _context, '/categorias', (route) => false)),
-              estilo: estiloBotonPrimary,
-              contenido: Padding(
-                padding: EdgeInsets.all(0),
-                child: Text('Ver más',
-                    style: TextStyle(color: Colors.white, fontSize: 12)),
-              ),
-            ),
-          )),
+          DataCell(Text('${_myData['fecha_de_creacion']}')),
         ]);
   }
 

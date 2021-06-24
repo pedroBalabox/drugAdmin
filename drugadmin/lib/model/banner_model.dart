@@ -26,7 +26,7 @@ class BannerModel {
     String descripcion;
     String imagenEscritorio;
     String imagenMovil;
-    DateTime fechaDeExposicion;
+    String fechaDeExposicion;
     String posicion;
     String linkExterno;
     String idDeFarmacia;
@@ -37,7 +37,7 @@ class BannerModel {
         descripcion: json["descripcion"],
         imagenEscritorio: json["imagen_escritorio"],
         imagenMovil: json["imagen_movil"],
-        fechaDeExposicion: DateTime.parse(json["fecha_de_exposicion"]),
+        fechaDeExposicion:json["fecha_de_exposicion"],
         posicion: json["posicion"],
         linkExterno: json["link_externo"],
         idDeFarmacia: json["id_de_farmacia"],
@@ -49,7 +49,8 @@ class BannerModel {
         "descripcion": descripcion,
         "imagen_escritorio": imagenEscritorio,
         "imagen_movil": imagenMovil,
-        "fecha_de_exposicion": "${fechaDeExposicion.year.toString().padLeft(4, '0')}-${fechaDeExposicion.month.toString().padLeft(2, '0')}-${fechaDeExposicion.day.toString().padLeft(2, '0')}",
+        "fecha_de_exposicion": fechaDeExposicion,
+        // "fecha_de_exposicion": "${fechaDeExposicion.year.toString().padLeft(4, '0')}-${fechaDeExposicion.month.toString().padLeft(2, '0')}-${fechaDeExposicion.day.toString().padLeft(2, '0')}",
         "posicion": posicion,
         "link_externo": linkExterno,
         "id_de_farmacia": idDeFarmacia,

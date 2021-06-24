@@ -71,7 +71,15 @@ class _UsuariosPageState extends State<UsuariosPage> {
     if (_isSearching != null) {
       for (int i = 0; i < myUsers.length; i++) {
         String dataNombre = myUsers[i]['name'].toString();
-        if (dataNombre.toLowerCase().contains(searchText.toLowerCase())) {
+        String dataPApellido = myUsers[i]['first_lastname'].toString();
+        String dataSApellido = myUsers[i]['second_lastname'].toString();
+        String dataSCorreo = myUsers[i]['mail'].toString();
+        String dataPhone = myUsers[i]['phone'].toString();
+        if (dataNombre.toLowerCase().contains(searchText.toLowerCase()) ||
+            dataPApellido.toLowerCase().contains(searchText.toLowerCase()) ||
+            dataSApellido.toLowerCase().contains(searchText.toLowerCase()) ||
+            dataSCorreo.toLowerCase().contains(searchText.toLowerCase()) ||
+            dataPhone.toLowerCase().contains(searchText.toLowerCase())) {
           setState(() {
             searchList.add(myUsers[i]);
           });
@@ -173,7 +181,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
         actions: [
           MediaQuery.of(context).size.width > 700
               ? Text(
-                  'Estatus:',
+                  'Tipo:',
                   style: TextStyle(fontSize: 15),
                 )
               : Container(),
@@ -283,7 +291,7 @@ const kTableColumns = <DataColumn>[
   ),
   DataColumn(
     label: Text(
-      'Status',
+      'Estatus',
       style: TextStyle(fontWeight: FontWeight.w900),
     ),
   ),
@@ -330,7 +338,7 @@ class DataSource extends DataTableSource {
           //           _myData,
           //         ))
           //     .whenComplete(() => Navigator.pushNamedAndRemoveUntil(
-          //         _context, '/tiendas', (route) => false));
+          //         _context, '/farmacias', (route) => false));
         },
         cells: <DataCell>[
           DataCell(CircleAvatar(

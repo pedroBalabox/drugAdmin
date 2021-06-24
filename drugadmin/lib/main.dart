@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:drugadmin/pages/CatDetalles_page.dart';
 import 'package:drugadmin/pages/addPorducts_page.dart';
 import 'package:drugadmin/pages/bannerDetalles_page.dart';
+import 'package:drugadmin/pages/editProduct_page.dart';
 import 'package:drugadmin/pages/lobby/lobbyAdmin.dart';
 import 'package:drugadmin/pages/ordenDetalles_page.dart';
 import 'package:drugadmin/pages/productosFarmacia_page.dart';
@@ -141,6 +143,42 @@ class MyApp extends StatelessWidget {
             builder: (context) {
               return AddProducts(
                 jsonData: args,
+              );
+            },
+          );
+        }
+
+        if (settings.name == DetallesCat.routeName) {
+          // Cast the arguments to the correct
+          // type: ScreenArguments.
+          final CatDetailArguments args =
+              settings.arguments as CatDetailArguments;
+
+          // Then, extract the required data from
+          // the arguments and pass the data to the
+          // correct screen.
+          return MaterialPageRoute(
+            builder: (context) {
+              return DetallesCat(
+                args,
+              );
+            },
+          );
+        }
+
+        if (settings.name == EditarProducto.routeName) {
+          // Cast the arguments to the correct
+          // type: ScreenArguments.
+          final EditDetailArguments args =
+              settings.arguments as EditDetailArguments;
+
+          // Then, extract the required data from
+          // the arguments and pass the data to the
+          // correct screen.
+          return MaterialPageRoute(
+            builder: (context) {
+              return EditarProducto(
+                jsonProducto: args,
               );
             },
           );

@@ -110,7 +110,7 @@
 //             : Navigator.pushNamedAndRemoveUntil(
 //                 context, '/login', (route) => false);
 //         break;
-//       case '/tiendas':
+//       case '/farmacias':
 //         clientAuth
 //             ? Navigator.of(context)
 //                 .push(

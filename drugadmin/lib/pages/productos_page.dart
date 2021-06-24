@@ -78,8 +78,10 @@ class _ProductosPageState extends State<ProductosPage> {
     _handleSearchStart();
     if (_isSearching != null) {
       for (int i = 0; i < orden.length; i++) {
-        String dataNombre = orden[i]['folio'];
-        if (dataNombre.toLowerCase().contains(searchText.toLowerCase())) {
+        String dataFolio = orden[i]['folio'];
+        String dataNombre = orden[i]['nombre'];
+        if (dataFolio.toLowerCase().contains(searchText.toLowerCase()) ||
+            dataNombre.toLowerCase().contains(searchText.toLowerCase())) {
           setState(() {
             searchList.add(orden[i]);
           });
@@ -229,7 +231,7 @@ class _ProductosPageState extends State<ProductosPage> {
                 borderSide: BorderSide.none,
                 borderRadius: BorderRadius.circular(0)),
             hintStyle: TextStyle(),
-            hintText: 'Buscar folio....',
+            hintText: 'Buscar folio o farmacia....',
             fillColor: bgGrey,
             filled: true),
       ),
@@ -312,7 +314,7 @@ class DataSource extends DataTableSource {
           //           _myData,
           //         ))
           //     .whenComplete(() => Navigator.pushNamedAndRemoveUntil(
-          //         _context, '/tiendas', (route) => false));
+          //         _context, '/farmacias', (route) => false));
         },
         cells: <DataCell>[
           DataCell(CircleAvatar(
@@ -446,7 +448,10 @@ class _CambiarStatusState extends State<CambiarStatus> {
           BotonRestTest(
             method: 'post',
             url: '${urlApi}documento/actualizar-estatus',
-            arrayData: {"archivo_id": widget.myItem['archivo_id'], "estatus": statusValue.id},
+            arrayData: {
+              "archivo_id": widget.myItem['archivo_id'],
+              "estatus": statusValue.id
+            },
             token: sharedPrefs.clientToken,
             contenido: Text('Guardar'),
             action: (value) => Navigator.pop(context),

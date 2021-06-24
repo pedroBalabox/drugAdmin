@@ -223,6 +223,10 @@ class _AddProductsState extends State<AddProducts> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 BotonSimple(
+                    action: () {
+                      launchURL(
+                          "https://sandbox.app.drugsiteonline.com/app/uploads/archivogtsOW2tQB7yv.png");
+                    },
                     estilo: estiloBotonPrimary,
                     contenido: Text(
                       'Descargar plantilla',
@@ -268,7 +272,8 @@ class _AddProductsState extends State<AddProducts> {
                             url: '$apiUrl/farmacia/cargar-productos',
                             method: 'post',
                             arrayData: {
-                              "farmacia_id": widget.jsonData.jsonData['farmacia_id'],
+                              "farmacia_id":
+                                  widget.jsonData.jsonData['farmacia_id'],
                               "lista_de_productos": docBase64
                             },
                             errorStyle: TextStyle(

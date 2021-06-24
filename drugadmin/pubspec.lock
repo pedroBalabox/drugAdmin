@@ -42,7 +42,7 @@ packages:
       name: codigojaguar
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.8"
+    version: "0.0.11"
   collection:
     dependency: transitive
     description:
@@ -140,6 +140,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  font_awesome_flutter:
+    dependency: "direct main"
+    description:
+      name: font_awesome_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "9.1.0"
   form_field_validator:
     dependency: "direct main"
     description:
