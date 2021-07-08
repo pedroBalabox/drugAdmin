@@ -254,15 +254,15 @@ const kTableColumns = <DataColumn>[
       style: TextStyle(fontWeight: FontWeight.w900),
     ),
   ),
+  // DataColumn(
+  //   label: Text(
+  //     'Cliente',
+  //     style: TextStyle(fontWeight: FontWeight.w900),
+  //   ),
+  // ),
   DataColumn(
     label: Text(
-      'Cliente',
-      style: TextStyle(fontWeight: FontWeight.w900),
-    ),
-  ),
-  DataColumn(
-    label: Text(
-      'Núm. de procutos',
+      'Núm. de productos',
       style: TextStyle(fontWeight: FontWeight.w900),
     ),
   ),
@@ -368,7 +368,7 @@ class DataSource extends DataTableSource {
         },
         cells: <DataCell>[
           DataCell(Text('${_myData['id_de_orden']}')),
-          DataCell(Text('${_myData['cliente']}')),
+          // DataCell(Text('${_myData['cliente']}')),
           DataCell(Text('${_myData['cantidad_de_productos']}')),
           DataCell(Text('\$${_myData['monto_total']}')),
           DataCell(Text(estatusOrden)),

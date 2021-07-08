@@ -163,7 +163,7 @@ class _CrearLabelCatState extends State<CrearLabelCat> {
                       correcto
                           ? Container()
                           : Text(
-                              'Selecciona una imaǵen.',
+                              'Selecciona una imagen.',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   color: Colors.black54, fontSize: 13),
@@ -285,7 +285,7 @@ class _CrearLabelCatState extends State<CrearLabelCat> {
                   formkey: formKey,
                   token: sharedPrefs.clientToken,
                   contenido: Text(
-                    'Agreagar',
+                    'Agregar',
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.fade,
                     style: TextStyle(

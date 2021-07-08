@@ -273,7 +273,13 @@ const kTableColumns = <DataColumn>[
   ),
   DataColumn(
     label: Text(
-      'Posición descuento',
+      'Precio descuento',
+      style: TextStyle(fontWeight: FontWeight.w900),
+    ),
+  ),
+  DataColumn(
+    label: Text(
+      'Estatus',
       style: TextStyle(fontWeight: FontWeight.w900),
     ),
   ),
@@ -355,6 +361,16 @@ class DataSource extends DataTableSource {
           DataCell(Text('\$${_myData['precio']}')),
           DataCell(Text('\$${_myData['precio_mayoreo']}')),
           DataCell(Text('\$${_myData['precio_con_descuento']}')),
+          DataCell(
+            Text(
+              _myData['status'] == 'active' ? 'Activo' : 'Inhabilitado',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: _myData['status'] == 'active'
+                      ? Colors.green[800]
+                      : Colors.red[800]),
+            ),
+          ),
           DataCell(Padding(
             padding: const EdgeInsets.symmetric(vertical: 5.0),
             child: BotonSimple(

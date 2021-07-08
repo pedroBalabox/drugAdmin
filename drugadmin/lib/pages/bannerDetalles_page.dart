@@ -201,10 +201,12 @@ class _TabAceptadaState extends State<BannerDetalles> {
                     child: Column(
                   children: [
                     InkWell(
-                      onTap: () async {
-                        await pickImage('desktop');
-                        setState(() {});
-                      },
+                      onTap: correcto
+                          ? () {}
+                          : () async {
+                              await pickImage('desktop');
+                              setState(() {});
+                            },
                       child: Container(
                         height: 200,
                         decoration: BoxDecoration(
@@ -222,11 +224,14 @@ class _TabAceptadaState extends State<BannerDetalles> {
                             )),
                       ),
                     ),
-                    Text(
-                      'Selecciona un banner para web (300x300 px)',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.black54, fontSize: 13),
-                    ),
+                    correcto
+                        ? Container()
+                        : Text(
+                            'Selecciona un banner para web (300x300 px)',
+                            textAlign: TextAlign.center,
+                            style:
+                                TextStyle(color: Colors.black54, fontSize: 13),
+                          ),
                   ],
                 )),
                 SizedBox(

@@ -176,15 +176,15 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(height: medPadding),
                     _formLogin(),
                     SizedBox(height: medPadding),
-                    Text(
-                      '¿Olvidaste tu contraseña?',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey),
-                    ),
-                    SizedBox(height: smallPadding * 1.25),
+                    // Text(
+                    //   '¿Olvidaste tu contraseña?',
+                    //   textAlign: TextAlign.center,
+                    //   style: TextStyle(
+                    //       fontSize: 16,
+                    //       fontWeight: FontWeight.w500,
+                    //       color: Colors.grey),
+                    // ),
+                    // SizedBox(height: smallPadding * 1.25),
                     InkWell(
                       onTap: () =>
                           launchURL('https://app.drugsiteonline.com/login'),

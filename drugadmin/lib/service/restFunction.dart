@@ -7,6 +7,7 @@ import 'package:http/http.dart' show Client;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 String urlApi = "https://sandbox.app.drugsiteonline.com/";
+// String urlApi = "https://api.production.drugsiteonline.com/";
 
 class RestFun {
   Client client = Client();

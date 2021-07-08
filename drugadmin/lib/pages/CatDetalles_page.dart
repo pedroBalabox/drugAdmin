@@ -181,7 +181,7 @@ class _DetallesCatState extends State<DetallesCat> {
                       correcto
                           ? Container()
                           : Text(
-                              'Selecciona una imaǵen.',
+                              'Selecciona una imagen.',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   color: Colors.black54, fontSize: 13),

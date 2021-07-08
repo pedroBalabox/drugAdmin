@@ -6,7 +6,7 @@ import 'package:drugadmin/widget/assetImage_widget.dart';
 import 'package:flutter/material.dart';
 
 var itemsMenu =
-    '[{"icon": 62446, "title": "Farmacias", "action": "/farmacias"}, {"icon": 60988, "title": "Solicitudes", "action": "/productos"},  {"icon": 62466, "title": "Usuarios", "action": "/usuarios"},  {"icon": 61821, "title": "Órdenes", "action": "/ordenes"},  {"icon": 983505, "title": "Banners", "action": "/banner"}, {"icon": 60988, "title": "Categorias", "action": "/categorias"}, {"icon": 60988, "title": "Etiquetas", "action": "/etiquetas"}, {"icon": 61849, "title": "Cerrar sesión", "action": "/logout"}]';
+    '[{"icon": 62446, "title": "Mi cuenta", "action": "/miCuenta"}, {"icon": 62446, "title": "Farmacias", "action": "/farmacias"}, {"icon": 60988, "title": "Solicitudes", "action": "/productos"},  {"icon": 62466, "title": "Usuarios", "action": "/usuarios"},  {"icon": 61821, "title": "Órdenes", "action": "/ordenes"},  {"icon": 983505, "title": "Banners", "action": "/banner"}, {"icon": 60988, "title": "Categorias", "action": "/categorias"}, {"icon": 60988, "title": "Etiquetas", "action": "/etiquetas"}, {"icon": 61849, "title": "Cerrar sesión", "action": "/logout"}]';
 
 class ResponsiveApp extends StatefulWidget {
   final screenWidht;
@@ -166,7 +166,7 @@ class _ResponsiveAppState extends State<ResponsiveApp> {
                   ) */
                   Flexible(
                     child: Container(
-                      width: 780,
+                      width: 870,
                       alignment: Alignment.bottomCenter,
                       child: ListView.builder(
                         itemCount: jsonMenu.length,
@@ -310,9 +310,7 @@ class _DrawerUserState extends State<DrawerUser> {
                         borderRadius: BorderRadius.circular(100),
                         border: Border.all(width: 1, color: Colors.white),
                         image: DecorationImage(
-                          image: userModel.imgUrl == null
-                              ? AssetImage('images/logoDrug.png')
-                              : NetworkImage(userModel.imgUrl),
+                          image: AssetImage('images/logoDrug.png'),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -364,8 +362,8 @@ Widget listMenu(BuildContext context, IconData iconMenu, Color colorIcon,
       ),
       onTap: () {
         if (action == "/logout") {
-          logoutUser().then(
-              (value) => Navigator.pushReplacementNamed(context, '/login'));
+          logoutUser().then((value) => Navigator.pushNamedAndRemoveUntil(
+              context, '/login', (route) => false));
         } else {
           if (Uri.base.path != action) {
             Navigator.pushNamed(context, action);

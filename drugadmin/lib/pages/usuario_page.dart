@@ -297,7 +297,7 @@ const kTableColumns = <DataColumn>[
   ),
   DataColumn(
     label: Text(
-      'Cambiar status',
+      'Cambiar estatus',
       style: TextStyle(fontWeight: FontWeight.w900),
     ),
   ),

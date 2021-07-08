@@ -67,4 +67,6 @@ var rutasDrug = {
   '/agregarbanner': (context) => LobbyAdmin(ruta: '/agregarbanner'),
   '/agregarCategoria': (context) => LobbyAdmin(ruta: '/agregarCategoria'),
   '/agregarEtiqueta': (context) => LobbyAdmin(ruta: '/agregarEtiqueta'),
+  '/miCuenta': (context) => LobbyAdmin(ruta: '/miCuenta'),
+   '/cambiar-contraseña': (context) => LobbyAdmin(ruta: '/cambiar-contraseña'),
 };

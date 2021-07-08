@@ -1,9 +1,11 @@
 import 'package:drugadmin/pages/addBanner_page.dart';
 import 'package:drugadmin/pages/addCatLabel.dart';
 import 'package:drugadmin/pages/banner_page.dart';
+import 'package:drugadmin/pages/changePass_page.dart';
 import 'package:drugadmin/pages/label_page.dart';
 import 'package:drugadmin/pages/lobby/validate_page.dart';
 import 'package:drugadmin/pages/login_page.dart';
+import 'package:drugadmin/pages/micienta_pafe.dart';
 import 'package:drugadmin/pages/orden_page.dart';
 import 'package:drugadmin/pages/productos_page.dart';
 import 'package:drugadmin/pages/tienda_page.dart';
@@ -55,6 +57,29 @@ class _LobbyAdminState extends State<LobbyAdmin> {
               (Route<dynamic> route) => false);
         }
         break;
+      case '/miCuenta':
+        if (clientAuth) {
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => MiCuentaPage()),
+              (Route<dynamic> route) => false);
+        } else {
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => LoginPage()),
+              (Route<dynamic> route) => false);
+        }
+        break;
+      case '/cambiar-contraseña':
+        if (clientAuth) {
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => ChangePass()),
+              (Route<dynamic> route) => false);
+        } else {
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => LoginPage()),
+              (Route<dynamic> route) => false);
+        }
+        break;
+
       case '/farmacias':
         if (clientAuth) {
           Navigator.of(context).pushAndRemoveUntil(
@@ -128,7 +153,8 @@ class _LobbyAdminState extends State<LobbyAdmin> {
       case '/agregarCategoria':
         if (clientAuth) {
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => CrearLabelCat('cat')))
+              .push(
+                  MaterialPageRoute(builder: (context) => CrearLabelCat('cat')))
               .then((value) => Navigator.pop(context));
         } else {
           Navigator.pushNamedAndRemoveUntil(
@@ -148,7 +174,8 @@ class _LobbyAdminState extends State<LobbyAdmin> {
       case '/agregarEtiqueta':
         if (clientAuth) {
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => CrearLabelCat('label')))
+              .push(MaterialPageRoute(
+                  builder: (context) => CrearLabelCat('label')))
               .then((value) => Navigator.pop(context));
         } else {
           Navigator.pushNamedAndRemoveUntil(

@@ -102,7 +102,7 @@ class _ProductosPageState extends State<ProductosPage> {
         drawerMenu: true,
         screenWidht: MediaQuery.of(context).size.width,
         body: bodyTiendas(),
-        title: "Productos");
+        title: "Solicitudes de productos");
   }
 
   Widget bodyTiendas() {
@@ -458,7 +458,7 @@ class _CambiarStatusState extends State<CambiarStatus> {
           )
         ],
         title: Text(
-          'Cambiar status',
+          'Cambiar estatus',
           textAlign: TextAlign.center,
         ),
         content: DropdownButton<Status>(

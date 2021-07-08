@@ -344,7 +344,11 @@ class _EditarProductoState extends State<EditarProducto> {
             method: 'post',
             showSuccess: true,
             stringCargando: 'Actualizando producto...',
-            action: (value) => null,
+            action: (value) {
+              setState(() {
+                base64Gallery = [];
+              });
+            },
             url: '${urlApi}actualizar/producto',
             contenido: Text('Actualizar producto',
                 style: TextStyle(
@@ -353,8 +357,75 @@ class _EditarProductoState extends State<EditarProducto> {
                     fontWeight: FontWeight.normal)),
             estilo: estiloValidar,
           ),
-        )
+        ),
+        SizedBox(
+          height: smallPadding * 4,
+        ),
+        InkWell(
+          onTap: () => _showMyDialogProduct(),
+          child: Text(
+            'Eliminar producto',
+            style: TextStyle(
+                decoration: TextDecoration.underline,
+                color: Theme.of(context).primaryColor,
+                fontWeight: FontWeight.w700,
+                fontSize: 18),
+          ),
+        ),
       ],
+    );
+  }
+
+  Future<void> _showMyDialogProduct() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Eliminar producto',
+            style: TextStyle(color: Colors.black87),
+          ),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                  child: Text(
+                    'Cancelar',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                BotonRestTest(
+                  action: (value) {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                  errorStyle: TextStyle(
+                    color: Colors.red[700],
+                    fontWeight: FontWeight.w600,
+                  ),
+                  arrayData: {
+                    "id_de_producto": productoModel.idDeProducto.toString()
+                  },
+                  url: '${urlApi}eliminar/producto',
+                  token: sharedPrefs.clientToken,
+                  method: 'post',
+                  contenido: Text(
+                    'Eliminar',
+                    style: TextStyle(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                ),
+              ],
+            )
+          ],
+        );
+      },
     );
   }
 
@@ -380,6 +451,40 @@ class _EditarProductoState extends State<EditarProducto> {
       ),
       child: Column(
         children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              productoModel.status == 'active' ? statusActive() : statusDes(),
+              BotonRestTest(
+                  arrayData: {"id_de_producto": productoModel.idDeProducto},
+                  token: sharedPrefs.clientToken,
+                  method: 'post',
+                  // showSuccess: true,
+                  action: (value) {
+                    setState(() {
+                      productoModel.status == 'active'
+                          ? productoModel.status = 'des'
+                          : productoModel.status = 'active';
+                    });
+                  },
+                  url: productoModel.status == 'active'
+                      ? '${urlApi}deshabilitar/producto'
+                      : '${urlApi}habilitar/producto',
+                  contenido: Text(
+                    productoModel.status == 'active'
+                        ? 'Deshabilitar'
+                        : 'Habilitar',
+                    style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 18),
+                  ))
+            ],
+          ),
+          SizedBox(
+            height: smallPadding,
+          ),
           Container(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height / 2.7,
@@ -425,31 +530,79 @@ class _EditarProductoState extends State<EditarProducto> {
     );
   }
 
-  pickImage() async {
-    final _picker = ImagePicker();
-    PickedFile image =
-        await _picker.getImage(source: ImageSource.gallery, imageQuality: 30);
-    // final imgBase64Str = await kIsWeb
-    //     ? networkImageToBase64(image.path)
-    //     : mobileb64(File(image.path));
-    var imgBase64Str;
-    if (kIsWeb) {
-      http.Response response = await http.get(Uri.parse(image.path));
-      final bytes = response?.bodyBytes;
-      imgBase64Str = base64Encode(bytes);
-    } else {
-      List<int> imageBytes = await File(image.path).readAsBytes();
-      imgBase64Str = base64Encode(imageBytes);
-    }
+  Widget statusActive() {
+    return Container(
+        width: 160,
+        padding: EdgeInsets.all(smallPadding / 2),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(50),
+            color: Colors.green[600].withOpacity(0.7)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.check, color: Colors.white, size: 17),
+            SizedBox(
+              width: 5,
+            ),
+            Text(
+              'Producto habilitado',
+              style: TextStyle(color: Colors.white),
+            ),
+          ],
+        ));
+  }
 
-    setState(() {
-      base64Gallery.add(imgBase64Str);
-      var image = ImageGallery(id: '', path: imgBase64Str, type: 'base64');
-      var listOfMaps = List<Map<String, dynamic>>();
-      listOfMaps.add({'id': image.id, 'path': image.path, 'type': image.type});
-      jsonGallery.add(listOfMaps[0]);
-    });
-    callback();
+  Widget statusDes() {
+    return Container(
+        width: 180,
+        padding: EdgeInsets.all(smallPadding / 2),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(50),
+            color: Colors.orange[600].withOpacity(0.7)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.check, color: Colors.white, size: 17),
+            SizedBox(
+              width: 5,
+            ),
+            Text(
+              'Producto Deshabilitado',
+              style: TextStyle(color: Colors.white),
+            ),
+          ],
+        ));
+  }
+
+  pickImage() async {
+    try {
+      final _picker = ImagePicker();
+      PickedFile image =
+          await _picker.getImage(source: ImageSource.gallery, imageQuality: 30);
+      // final imgBase64Str = await kIsWeb
+      //     ? networkImageToBase64(image.path)
+      //     : mobileb64(File(image.path));
+      var imgBase64Str;
+
+      if (kIsWeb) {
+        http.Response response = await http.get(Uri.parse(image.path));
+        final bytes = response?.bodyBytes;
+        imgBase64Str = base64Encode(bytes);
+      } else {
+        List<int> imageBytes = await File(image.path).readAsBytes();
+        imgBase64Str = base64Encode(imageBytes);
+      }
+
+      setState(() {
+        base64Gallery.add(imgBase64Str);
+        var image = ImageGallery(id: '', path: imgBase64Str, type: 'base64');
+        var listOfMaps = List<Map<String, dynamic>>();
+        listOfMaps
+            .add({'id': image.id, 'path': image.path, 'type': image.type});
+        jsonGallery.add(listOfMaps[0]);
+      });
+      callback();
+    } catch (e) {}
   }
 
   callback() async {
@@ -457,7 +610,7 @@ class _EditarProductoState extends State<EditarProducto> {
   }
 
   productSwiper() {
-    print(' ----------- gal' + jsonGallery.length.toString());
+    // print(' ----------- gal' + jsonGallery.length.toString());
     return Swiper(
       key: UniqueKey(),
       // control: SwiperControl(),
@@ -784,33 +937,36 @@ class _EditarProductoState extends State<EditarProducto> {
             ? Container()
             : Column(
                 children: [
-                  MultiSelectDialogField<Category>(
-                    searchHint: 'Buscar',
-                    buttonText: Text(
-                      'Etiquetas',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black54,
-                          fontSize: 15),
+                  IgnorePointer(
+                    ignoring: _itemsLabel == null ? true : false,
+                    child: MultiSelectDialogField<Category>(
+                      searchHint: 'Buscar',
+                      buttonText: Text(
+                        'Etiquetas',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black54,
+                            fontSize: 15),
+                      ),
+                      buttonIcon: Icon(Icons.arrow_drop_down),
+                      title: Text(
+                        'Etiquetas',
+                      ),
+                      cancelText: Text('CANCELAR'),
+                      searchable: true,
+                      listType: MultiSelectListType.CHIP,
+                      items: _itemsLabel,
+                      initialValue: _myLabels,
+                      onConfirm: (values) {
+                        setState(() {
+                          myLabels = [];
+                          for (int j = 0; j <= values.length - 1; j++) {
+                            myLabels.add(values[j].id);
+                          }
+                        });
+                      },
+                      // maxChildSize: 0.8,
                     ),
-                    buttonIcon: Icon(Icons.arrow_drop_down),
-                    title: Text(
-                      'Etiquetas',
-                    ),
-                    cancelText: Text('CANCELAR'),
-                    searchable: true,
-                    listType: MultiSelectListType.CHIP,
-                    items: _itemsLabel,
-                    initialValue: _myLabels,
-                    onConfirm: (values) {
-                      setState(() {
-                        myLabels = [];
-                        for (int j = 0; j <= values.length - 1; j++) {
-                          myLabels.add(values[j].id);
-                        }
-                      });
-                    },
-                    // maxChildSize: 0.8,
                   ),
                   labelsWidget(),
                 ],
@@ -843,40 +999,43 @@ class _EditarProductoState extends State<EditarProducto> {
               )
             : Column(
                 children: [
-                  MultiSelectDialogField<Category>(
-                    searchHint: 'Buscar',
-                    buttonText: Text(
-                      'Categoría',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Colors.black54,
-                          fontSize: 15),
+                  IgnorePointer(
+                    ignoring: _itemsCat == null ? true : false,
+                    child: MultiSelectDialogField<Category>(
+                      searchHint: 'Buscar',
+                      buttonText: Text(
+                        'Categoría',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black54,
+                            fontSize: 15),
+                      ),
+                      buttonIcon: Icon(Icons.arrow_drop_down),
+                      title: Text(
+                        'Categorias',
+                      ),
+                      cancelText: Text('CANCELAR'),
+                      searchable: true,
+                      listType: MultiSelectListType.CHIP,
+                      items: _itemsCat,
+                      // chipDisplay: MultiSelectChipDisplay(
+                      //   icon: Icon(Icons.close),
+                      //   items: _itemsCat,
+                      //   // onTap: (value) => setState(() {
+                      //   //   _myCat = value;
+                      //   // }),
+                      // ),
+                      initialValue: _myCat,
+                      onConfirm: (values) {
+                        setState(() {
+                          myCats = [];
+                          for (int j = 0; j <= values.length - 1; j++) {
+                            myCats.add(values[j].id);
+                          }
+                        });
+                      },
+                      // maxChildSize: 0.8,
                     ),
-                    buttonIcon: Icon(Icons.arrow_drop_down),
-                    title: Text(
-                      'Categorias',
-                    ),
-                    cancelText: Text('CANCELAR'),
-                    searchable: true,
-                    listType: MultiSelectListType.CHIP,
-                    items: _itemsCat,
-                    // chipDisplay: MultiSelectChipDisplay(
-                    //   icon: Icon(Icons.close),
-                    //   items: _itemsCat,
-                    //   // onTap: (value) => setState(() {
-                    //   //   _myCat = value;
-                    //   // }),
-                    // ),
-                    initialValue: _myCat,
-                    onConfirm: (values) {
-                      setState(() {
-                        myCats = [];
-                        for (int j = 0; j <= values.length - 1; j++) {
-                          myCats.add(values[j].id);
-                        }
-                      });
-                    },
-                    // maxChildSize: 0.8,
                   ),
                   // MultiSelectDialogField<Category>(
                   //   searchHint: 'Buscar',

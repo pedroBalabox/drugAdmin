@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:codigojaguar/codigojaguar.dart';
 import 'package:drugadmin/service/restFunction.dart';
 import 'package:drugadmin/service/sharedPref.dart';
@@ -31,7 +33,9 @@ class _AddProductsState extends State<AddProducts> {
   bool load = false;
   bool error = false;
 
-  String succeString;
+  String successString;
+
+  bool success = false;
 
   @override
   void initState() {
@@ -63,14 +67,23 @@ class _AddProductsState extends State<AddProducts> {
   // }
 
   subirDoc() async {
-    FilePickerResult result = await FilePicker.platform
-        .pickFiles(type: FileType.custom, allowedExtensions: ['csv']);
+    try {
+      FilePickerResult result = await FilePicker.platform.pickFiles(
+          type: FileType.custom,
+          allowedExtensions: ['csv'],
+          allowCompression: true);
 
-    var uri = Uri.dataFromBytes(result.files.first.bytes).toString();
-    setState(() {
-      docName = result.files.single.name;
-      docBase64 = uri;
-    });
+      var uri = Uri.dataFromBytes(result.files.first.bytes).toString();
+      print(result.files.single.size);
+      if (result.files.single.size <= 10000000) {
+        setState(() {
+          docName = result.files.single.name;
+          docBase64 = uri;
+        });
+      }
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   @override
@@ -225,7 +238,7 @@ class _AddProductsState extends State<AddProducts> {
                 BotonSimple(
                     action: () {
                       launchURL(
-                          "https://sandbox.app.drugsiteonline.com/app/uploads/archivogtsOW2tQB7yv.png");
+                          "https://app.drugsiteonline.com/descargas/plantilla_productos_drug.csv");
                     },
                     estilo: estiloBotonPrimary,
                     contenido: Text(
@@ -243,7 +256,7 @@ class _AddProductsState extends State<AddProducts> {
                           'Subir CSV',
                           style: TextStyle(color: Colors.white),
                         ))
-                    : succeString != null
+                    : successString != null
                         ? Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
@@ -257,7 +270,7 @@ class _AddProductsState extends State<AddProducts> {
                                 ),
                                 Flexible(
                                   child: Text(
-                                    succeString,
+                                    successString,
                                     maxLines: 3,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
@@ -280,11 +293,32 @@ class _AddProductsState extends State<AddProducts> {
                               color: Colors.red[700],
                               fontWeight: FontWeight.w600,
                             ),
-                            action: (value) => setState(() {
-                                  succeString = value['message'];
-                                }),
+                            action: (value) {
+                              // print('ok---' +
+                              //     jsonDecode(value['response'])
+                              //         .length
+                              //         .toString());
+                              if (jsonDecode(value['response']).length > 2) {
+                                var code =
+                                    jsonDecode(value['response'])['code'];
+                                if (code == 'warning') {
+                                  setState(() {
+                                    successString =
+                                        "Hubo problema para cargar algunos productos";
+                                    //  +
+                                    // value['message'];
+                                  });
+                                }else{
+                                  successString = value['message'];
+                                }
+                              } else {
+                                setState(() {
+                                  successString = value['message'];
+                                });
+                              }
+                            },
                             estilo: estiloBotonSecundary,
-                            showSuccess: true,
+                            // showSuccess: true,
                             stringCargando: 'Subiendo archivo...',
                             contenido: Text(
                               'Enviar',
@@ -297,7 +331,7 @@ class _AddProductsState extends State<AddProducts> {
                       ),
                 docName == null
                     ? Container()
-                    : succeString != null
+                    : successString != null
                         ? Container()
                         : docCargado(docName)
               ],
@@ -354,3 +388,66 @@ class _AddProductsState extends State<AddProducts> {
     );
   }
 }
+
+// [{status: true, code: success, message: Los productos se cargaron exitósamente, receiver: both}, {successful_products: [[10101, SI, Paracetamol
+// de 500mg, Comprimido bucodispersable: deshacer en la boca antes de ser tragado.
+// Granulado efervescente: disolver en un vaso de agua, tomar cuando cese el burbujeo., Farmacias del ahorro, 90.00, 80.00, 50.00, 150, 1]]}]
+
+// [{status: true, code: success, message: Los productos se cargaron exitósamente, receiver: both}, {successful_products: [[10101, SI, Paracetamol
+// de 500mg, Comprimido bucodispersable: deshacer en la boca antes de ser tragado.
+// Granulado efervescente: disolver en un vaso de agua, tomar cuando cese el burbujeo., Farmacias del ahorro, 90.00, 80.00, 50.00, 150, 1]]}]
+
+// {status: true, code: warning, message: {successful_products: [[10108, SI, Paracetamol de 500mg 🍺, Comprimido bucodispersable: deshacer en la
+// boca antes de ser tragado.
+// Granulado efervescente: disolver en un vaso de agua, tomar cuando cese el burbujeo., Farmacias del ahorro, 0, 80.00, 50.00, -2, 30a]],
+// error_products: [{product_data: [10103, SI, Paracetamol de 500mg, O̲ppa̲ (っ-̶●̃益●̶̃)っ ,︵‿ S̲t̲yl̲e̲ ♚, , dsg, c, c, -123,5, j], error: Problema para
+// actualizar el producto: Array}, {product_data: [, , , , , , , , , ], error: Problema para crear el producto: Faltan los siguientes campos: "precio"=>
+// No es un precio válido, "stock"=> No es un número entero válido, "precio_con_descuento"=> No es un precio válido, "precio_mayoreo"=> No es un precio
+// válido, "cantidad_mayoreo"=> No es un número entero válido}, {product_data: [, , , , , , , , , ], error: Problema para crear el producto: Faltan los
+// siguientes campos: "precio"=> No es un precio válido, "stock"=> No es un número entero válido, "precio_con_descuento"=> No es un precio válido,
+// "precio_mayoreo"=> No es un precio válido, "cantidad_mayoreo"=> No es un número entero válido}, {product_data: [, , , , , , , , , ], error: Problema
+// para crear el producto: Faltan los siguientes campos: "precio"=> No es un precio válido, "stock"=> No es un número entero válido,
+// "precio_con_descuento"=> No es un precio válido, "precio_mayoreo"=> No es un precio válido, "cantidad_mayoreo"=> No es un número entero válido},
+// {product_data: [, , , , , , , , , ], error: Problema para crear el producto: Faltan los siguientes campos: "precio"=> No es un precio válido,
+// "stock"=> No es un número entero válido, "precio_con_descuento"=> No es un precio válido, "precio_mayoreo"=> No es un precio válido,
+// "cantidad_mayoreo"=> No es un número entero válido}, {product_data: [, , , 0, , , , , , ], error: Problema para crear el producto: Faltan los
+// siguientes campos: "precio"=> No es un precio válido, "stock"=> No es un número entero válido, "precio_con_descuento"=> No es un precio válido,
+// "precio_mayoreo"=> No es un precio válido, "cantidad_mayoreo"=> No es un número entero válido}]}, receiver: both}
+
+// status: true, code: warning, message: {successful_products: [[10101, SI, Paracetamol de 500mg 🍺, Comprimido bucodispersable: deshacer en
+// la boca antes de ser tragado.
+// Granulado efervescente: disolver en un vaso de agua, tomar cuando cese el burbujeo., Farmacias del ahorro, 0, 80.00, 50.00, -2, 30a], [10103, ON,
+// Paracetamol de 500mg, ♚, Farmacias del ahorro, 90.01, 80.01, 50.01, 97, 2], [10104, NO, Aspirina ®️, TextStyle( color: Colors.red[700], fontWeight:
+// FontWeight.w600, ), ), !errorStr ? Container() : SizedBox( height: smallPadding, ), Padding(, Farmacias del ahorro, 20, 10, 25, 10, 2], [10105, SI ,
+// Paracetamol❣️, Comprimido bucodispersable: deshacer en la boca antes de ser tragado.
+// Granulado efervescente: disolver en un vaso de agua, tomar cuando cese el burbujeo., Farmacias del ahorro, 90.02, 80.02, 50.02, 44, 3]],
+// error_products: [{product_data: [10102, SI, Paracetamol de 500mg, O̲ppa̲ (っ-̶●̃益●̶̃)っ ,︵‿ S̲t̲yl̲e̲ ♚, , dsg, c, c, -123,5, j], error: Problema para
+// crear el producto: Faltan los siguientes campos: "precio"=> No es un precio válido, "stock"=> No es un número entero válido, "precio_con_descuento"=>
+// No es un precio válido, "precio_mayoreo"=> No es un precio válido}, {product_data: [10106c, , (っ＾▿＾)۶🍸🌟🍺٩(˘◡˘ ), O̲ppa̲ (っ-̶●̃益●̶̃)っ ,︵‿
+// S̲t̲yl̲e̲, , dsg, c, c, 17,5, j], error: Problema para crear el producto: Faltan los siguientes campos: "precio"=> No es un precio válido, "stock"=>
+// No es un número entero válido, "precio_con_descuento"=> No es un precio válido, "precio_mayoreo"=> No es un precio válido}, {product_data: [, , , 0,
+// , , , , , ], error: Problema para crear el producto: Faltan los siguientes campos: "precio"=> No es un precio válido, "stock"=> No es un número
+// entero válido, "precio_con_descuento"=> No es un precio válido, "precio_mayoreo"=> No es un precio válido, "cantidad_mayoreo"=> No es un número
+// entero válido}]
+
+// message: {successful_products: [[10101, SI, Paracetamol de 500mg
+// 🍺, Comprimido bucodispersable: deshacer en la boca antes de ser tragado.
+// Granulado efervescente: disolver en un vaso de agua, tomar cuando cese el burbujeo., Farmacias del ahorro, 0, 80.00, 50.00, -2, 30a]],
+// error_products: [{product_data: [10102, SI, Paracetamol de 500mg, O̲ppa̲ (っ-̶●̃益●̶̃)っ ,︵‿ S̲t̲yl̲e̲ ♚, , dsg, c, c, -123,5, j], error: Problema para
+// crear el producto: Faltan los siguientes campos: "precio"=> No es un precio válido, "stock"=> No es un número entero válido, "precio_con_descuento"=>
+// No es un precio válido, "precio_mayoreo"=> No es un precio válido}, {product_data: [, , , , , , , , , ], error: Problema para crear el producto:
+// Faltan los siguientes campos: "precio"=> No es un precio válido, "stock"=> No es un número entero válido, "precio_con_descuento"=> No es un precio
+// válido, "precio_mayoreo"=> No es un precio válido, "cantidad_mayoreo"=> No es un número entero válido}, {product_data: [, , , , , , , , , ], error:
+// Problema para crear el producto: Faltan los siguientes campos: "precio"=> No es un precio válido, "stock"=> No es un número entero válido,
+// "precio_con_descuento"=> No es un precio válido, "precio_mayoreo"=> No es un precio válido, "cantidad_mayoreo"=> No es un número entero válido},
+// {product_data: [, , , , , , , , , ], error: Problema para crear el producto: Faltan los siguientes campos: "precio"=> No es un precio válido,
+// "stock"=> No es un número entero válido, "precio_con_descuento"=> No es un precio válido, "precio_mayoreo"=> No es un precio válido,
+// "cantidad_mayoreo"=> No es un número entero válido}, {product_data: [, , , , , , , , , ], error: Problema para crear el producto: Faltan los
+// siguientes campos: "precio"=> No es un precio válido, "stock"=> No es un número entero válido, "precio_con_descuento"=> No es un precio válido,
+// "precio_mayoreo"=> No es un precio válido, "cantidad_mayoreo"=> No es un número entero válido}, {product_data: [, , , 0, , , , , , ], error: Problema
+// para crear el producto: Faltan los siguientes campos: "precio"=> No es un precio válido, "stock"=> No es un número entero válido,
+// "precio_con_descuento"=> No es un precio válido, "precio_mayoreo"=> No es un precio válido, "cantidad_mayoreo"=> No es un número entero válido}]}}
+
+// {status: true, code: success, message: Los productos se cargaron exitósamente, receiver: both}, {successful_products: [[10101, SI, Paracetamol
+// de 500mg, Comprimido bucodispersable: deshacer en la boca antes de ser tragado.
+// Granulado efervescente: disolver en un vaso de agua, tomar cuando cese el burbujeo., Farmacias del ahorro, 90.00, 80.00, 50.00, 150, 1]]}]
