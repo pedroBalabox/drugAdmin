@@ -43,8 +43,6 @@ class _TabAceptadaState extends State<TiendaDetalles> {
   Status statusValue;
   List<Status> listaStatus = [];
 
-
-
   String logoUrl;
 
   @override
@@ -126,6 +124,18 @@ class _TabAceptadaState extends State<TiendaDetalles> {
     });
   }
 
+  cambiarStatusVerif(id, status) {
+    var arrayData = {"farmacia_id": id, "estatus_verificacion": status};
+    rest
+        .restService(arrayData, '${urlApi}actualizar/farmacia',
+            sharedPrefs.clientToken, 'post')
+        .then((value) {
+      print(value);
+      load = true;
+      getDetalles();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -148,7 +158,7 @@ class _TabAceptadaState extends State<TiendaDetalles> {
                       child: bodyTienda(),
                     ),
                   ]),
-        title: "Detalles de farmacia");
+        title: "Detalles de la tienda");
   }
 
   Widget bodyTienda() {
@@ -157,7 +167,7 @@ class _TabAceptadaState extends State<TiendaDetalles> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          'Datos de farmacia',
+          'Datos de la tienda',
           style: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
         ),
@@ -185,7 +195,81 @@ class _TabAceptadaState extends State<TiendaDetalles> {
         Container(
           child: miStatus(),
         ),
+        SizedBox(
+          height: smallPadding * 4,
+        ),
+        Container(
+          child: verificacionSw(),
+        )
       ],
+    );
+  }
+
+  Widget verificacionSw() {
+    var size = MediaQuery.of(context).size;
+
+    bool isSwitched =
+        farmaciaModel.estatus_verificacion == 'not_verified' ? false : true;
+    var textValue = farmaciaModel.estatus_verificacion == 'not_verified'
+        ? 'Tienda no verificada'
+        : 'Tienda verificada';
+
+    void toggleSwitch(bool value) {
+      if (isSwitched == false) {
+        setState(() {
+          cambiarStatusVerif(farmaciaModel.farmacia_id, 'verified');
+          // isSwitched = true;
+          // textValue = 'Tienda Sí verificada';
+        });
+      } else {
+        setState(() {
+          cambiarStatusVerif(farmaciaModel.farmacia_id, 'not_verified');
+          // isSwitched = true;
+          // textValue = 'Tienda Sí verificada';
+        });
+        //print('Tienda No verificada');
+      }
+    }
+
+    return Container(
+      padding: EdgeInsets.all(smallPadding * 2),
+      width: size.width,
+      // height: size.height,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Color.fromRGBO(0, 0, 0, 0.1),
+            blurRadius: 5.0, // soften the shadow
+            spreadRadius: 1.0, //extend the shadow
+            offset: Offset(
+              0.0, // Move to right 10  horizontally
+              3.0, // Move to bottom 10 Vertically
+            ),
+          )
+        ],
+      ),
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Text('Verificación de la tienda',
+            style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w700,
+                fontSize: 18)),
+        Text(
+          '$textValue',
+          style: TextStyle(fontSize: 15),
+        ),
+        Transform.scale(
+            scale: 1,
+            child: Switch(
+              onChanged: toggleSwitch,
+              value: isSwitched,
+              activeColor: Theme.of(context).accentColor,
+              activeTrackColor: Colors.grey[300],
+              inactiveThumbColor: Colors.grey[300],
+              inactiveTrackColor: Colors.grey,
+            )),
+      ]),
     );
   }
 
@@ -327,6 +411,9 @@ class _TabAceptadaState extends State<TiendaDetalles> {
             ),
             SizedBox(height: smallPadding),
             statusWidget,
+            farmaciaModel.estatus_verificacion == 'not_verified'
+                ? Container()
+                : statusVerficado(),
             // farmaciaModel.estatus == 'approved'
             //     ? statusApproved()
             //     : statusReview(),
@@ -404,7 +491,6 @@ class _TabAceptadaState extends State<TiendaDetalles> {
             textCapitalization: TextCapitalization.words,
             tipo: 'typeValidator',
           ),
-          
         ],
       ),
     );
@@ -942,6 +1028,28 @@ class _TabAceptadaState extends State<TiendaDetalles> {
   }
 }
 
+Widget statusVerficado() {
+  return Container(
+      width: 150,
+      padding: EdgeInsets.all(smallPadding / 2),
+      // decoration: BoxDecoration(
+      //     borderRadius: BorderRadius.circular(50),
+      //     color: Colors.green[600].withOpacity(0.7)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.star, color: Colors.orange[400], size: 17),
+          SizedBox(
+            width: 5,
+          ),
+          Text(
+            'Tienda verificada',
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ));
+}
+
 Widget statusApproved() {
   return Container(
       width: 150,
@@ -957,7 +1065,7 @@ Widget statusApproved() {
             width: 5,
           ),
           Text(
-            'Farmacia Activa',
+            'Tienda Activa',
             style: TextStyle(color: Colors.white),
           ),
         ],
@@ -1001,7 +1109,7 @@ Widget statusRejected() {
             width: 5,
           ),
           Text(
-            'Farmacia rechazada',
+            'Tienda rechazada',
             style: TextStyle(color: Colors.white),
           ),
         ],
@@ -1023,7 +1131,7 @@ Widget statusBlocked() {
             width: 5,
           ),
           Text(
-            'Farmacia bloqueada',
+            'Tienda bloqueada',
             style: TextStyle(color: Colors.white),
           ),
         ],

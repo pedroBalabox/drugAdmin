@@ -94,7 +94,7 @@ class _TiendasPageState extends State<TiendasPage> {
         drawerMenu: true,
         screenWidht: MediaQuery.of(context).size.width,
         body: bodyTiendas(),
-        title: "Farmacias");
+        title: "Tiendas");
   }
 
   Widget bodyTiendas() {

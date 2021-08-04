@@ -187,7 +187,7 @@ class _OrdenDetallesState extends State<OrdenDetalles> {
                       child: bodyBanner(),
                     ),
                   ]),
-        title: "Detalles de órden");
+        title: "Detalles del pedido");
   }
 
   Widget bodyBanner() {
@@ -198,7 +198,7 @@ class _OrdenDetallesState extends State<OrdenDetalles> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            'Datos de la órden',
+            'Datos del pedido',
             style: TextStyle(
                 color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
           ),
@@ -426,7 +426,7 @@ class _OrdenDetallesState extends State<OrdenDetalles> {
       child: Column(
         children: [
           Text(
-            'Cambiar estatus de órden',
+            'Cambiar estatus de pedido',
             style: TextStyle(
                 color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
           ),
@@ -670,7 +670,7 @@ class _OrdenDetallesState extends State<OrdenDetalles> {
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
                         )),
-                    Text('${prodjson['marca']}',
+                    Text('${prodjson['nombre_farmacia']}',
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
                         textAlign: TextAlign.center,
@@ -729,7 +729,7 @@ Widget statusProcess() {
             width: 5,
           ),
           Text(
-            'Óreden en proceso',
+            'Pedido en proceso',
             style: TextStyle(color: Colors.white),
           ),
         ],
@@ -751,7 +751,7 @@ Widget statusShipped() {
             width: 5,
           ),
           Text(
-            'Óreden en camino',
+            'Pedido en camino',
             style: TextStyle(color: Colors.white),
           ),
         ],
@@ -760,7 +760,7 @@ Widget statusShipped() {
 
 Widget statusConfirmed() {
   return Container(
-      width: 150,
+      width: 155,
       padding: EdgeInsets.all(smallPadding / 2),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(50),
@@ -773,7 +773,7 @@ Widget statusConfirmed() {
             width: 5,
           ),
           Text(
-            'Órden confirmada',
+            'Pedido confirmado',
             style: TextStyle(color: Colors.white),
           ),
         ],
@@ -795,7 +795,7 @@ Widget statusDelivered() {
             width: 5,
           ),
           Text(
-            'Órden entregada',
+            'Pedido entregado',
             style: TextStyle(color: Colors.white),
           ),
         ],
@@ -861,7 +861,7 @@ Widget statusCancel() {
             width: 5,
           ),
           Text(
-            'Órden cancelada',
+            'Pedido cancelado',
             style: TextStyle(color: Colors.white),
           ),
         ],

@@ -238,7 +238,7 @@ class _OrdenPageState extends State<OrdenPage> {
                 borderSide: BorderSide.none,
                 borderRadius: BorderRadius.circular(0)),
             hintStyle: TextStyle(),
-            hintText: 'Buscar órden....',
+            hintText: 'Buscar pedido....',
             fillColor: bgGrey,
             filled: true),
       ),
@@ -246,6 +246,7 @@ class _OrdenPageState extends State<OrdenPage> {
   }
 }
 
+/* Columns of dataTable */
 ////// Columns in table.
 const kTableColumns = <DataColumn>[
   DataColumn(
@@ -254,12 +255,6 @@ const kTableColumns = <DataColumn>[
       style: TextStyle(fontWeight: FontWeight.w900),
     ),
   ),
-  // DataColumn(
-  //   label: Text(
-  //     'Cliente',
-  //     style: TextStyle(fontWeight: FontWeight.w900),
-  //   ),
-  // ),
   DataColumn(
     label: Text(
       'Núm. de productos',
@@ -274,13 +269,19 @@ const kTableColumns = <DataColumn>[
   ),
   DataColumn(
     label: Text(
-      'Estatus de órden',
+      'Estatus de pedido',
       style: TextStyle(fontWeight: FontWeight.w900),
     ),
   ),
   DataColumn(
     label: Text(
       'Estatus de envio',
+      style: TextStyle(fontWeight: FontWeight.w900),
+    ),
+  ),
+  DataColumn(
+    label: Text(
+      'Cliente',
       style: TextStyle(fontWeight: FontWeight.w900),
     ),
   ),
@@ -354,7 +355,7 @@ class DataSource extends DataTableSource {
       default:
         estatusEnvio = 'Desconocido';
     }
-
+/* Rows of dataTable */
     return DataRow.byIndex(
         index: index, // DONT MISS THIS
         onSelectChanged: (bool value) {
@@ -373,6 +374,7 @@ class DataSource extends DataTableSource {
           DataCell(Text('\$${_myData['monto_total']}')),
           DataCell(Text(estatusOrden)),
           DataCell(Text(estatusEnvio)),
+          DataCell(Text('${_myData['cliente']}')),
         ]);
   }
 
