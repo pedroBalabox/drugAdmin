@@ -90,7 +90,7 @@ class _OrdenPageState extends State<OrdenPage> {
         drawerMenu: true,
         screenWidht: MediaQuery.of(context).size.width,
         body: bodyTiendas(),
-        title: "Órdenes");
+        title: "Pedidos");
   }
 
   Widget bodyTiendas() {
@@ -281,6 +281,12 @@ const kTableColumns = <DataColumn>[
   ),
   DataColumn(
     label: Text(
+      'Dirección de pago',
+      style: TextStyle(fontWeight: FontWeight.w900),
+    ),
+  ),
+  DataColumn(
+    label: Text(
       'Cliente',
       style: TextStyle(fontWeight: FontWeight.w900),
     ),
@@ -321,6 +327,7 @@ class DataSource extends DataTableSource {
 
     String estatusOrden;
     String estatusEnvio;
+    String estatusPago;
 
     // estatus de orden
     switch (_myData['estatus_de_orden']) {
@@ -361,6 +368,21 @@ class DataSource extends DataTableSource {
       default:
         estatusEnvio = 'Desconocido';
     }
+
+    switch (_myData['estatus_de_pago']) {
+      case 'oder_paid_by_client':
+        estatusPago = 'Pagado por cliente';
+        break;
+      case 'order_paid_to_store':
+        estatusPago = 'Pagado a la tienda';
+        break;
+      case 'order_payment_rejected':
+        estatusPago = 'Pago rechazado';
+        break;
+      default:
+        estatusPago = 'Desconocido';
+    }
+
 /* Rows of dataTable */
     return DataRow.byIndex(
         index: index, // DONT MISS THIS
@@ -380,6 +402,7 @@ class DataSource extends DataTableSource {
           DataCell(Text('\$${_myData['monto_total']}')),
           DataCell(Text(estatusOrden)),
           DataCell(Text(estatusEnvio)),
+          DataCell(Text(estatusPago)),
           DataCell(Text('${_myData['cliente']}')),
           DataCell(Container(
             width: 200,

@@ -24,6 +24,13 @@ class StatusEnvio {
   final String id;
 }
 
+class StatusPago {
+  const StatusPago(this.id, this.name);
+
+  final String name;
+  final String id;
+}
+
 class OrdenDetalles extends StatefulWidget {
   static const routeName = '/detalles-orden';
 
@@ -45,8 +52,10 @@ class _OrdenDetallesState extends State<OrdenDetalles> {
 
   Status statusValue;
   StatusEnvio statusValueEnvio;
+  StatusPago statusValuePago;
   List<Status> listaStatus = [];
   List<StatusEnvio> listaStatusEnvio = [];
+  List<StatusPago> listaStatusPago = [];
 
   String date;
   String errorStr;
@@ -73,6 +82,14 @@ class _OrdenDetallesState extends State<OrdenDetalles> {
     listaStatusEnvio.add(StatusEnvio('on_the_way', 'En camino'));
     listaStatusEnvio.add(StatusEnvio('delivered', 'Entregado'));
     listaStatusEnvio.add(StatusEnvio('unknown', 'Desconocido'));
+
+    listaStatusPago
+        .add(StatusPago('oder_paid_by_client', 'Pagado por cliente'));
+    listaStatusPago
+        .add(StatusPago('order_paid_to_store"', 'Pagado a la tienda'));
+    listaStatusPago.add(StatusPago('order_payment_rejected', 'Pago rechazado'));
+    listaStatusPago.add(StatusPago('unknown', 'Desconocido'));
+
     setState(() {
       jsonOrden = widget.jsonData.jsonData;
     });
@@ -100,6 +117,16 @@ class _OrdenDetallesState extends State<OrdenDetalles> {
       statusValueEnvio = listaStatusEnvio[2];
     } else {
       statusValueEnvio = listaStatusEnvio[3];
+    }
+
+    if (jsonOrden['estatus_de_pago'] == 'oder_paid_by_client') {
+      statusValuePago = listaStatusPago[0];
+    } else if (jsonOrden['estatus_de_pago'] == 'order_paid_to_store') {
+      statusValuePago = listaStatusPago[1];
+    } else if (jsonOrden['estatus_de_pago'] == 'order_payment_rejected') {
+      statusValuePago = listaStatusPago[2];
+    } else {
+      statusValuePago = listaStatusPago[3];
     }
 
     getDetalles();
@@ -535,6 +562,74 @@ class _OrdenDetallesState extends State<OrdenDetalles> {
                     "id_de_orden": jsonOrden['id_de_orden'],
                     "estatus_de_envio": statusValueEnvio.id,
                     "estatus_de_orden": jsonOrden['estatus_de_orden'],
+                    "comments": null
+                  },
+                  method: 'post',
+                  action: (value) => getDetalles(),
+                  showSuccess: true,
+                  contenido: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: smallPadding),
+                    child: Text(
+                      'Guardar',
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.fade,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                  estilo: estiloBotonPrimary,
+                ),
+              )
+            ],
+          ),
+          SizedBox(height: medPadding),
+          Text(
+            'Cambiar estatus de pago',
+            style: TextStyle(
+                color: Colors.black, fontWeight: FontWeight.w700, fontSize: 18),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              DropdownButton<StatusPago>(
+                value: statusValuePago,
+                icon: const Icon(Icons.arrow_drop_down),
+                iconSize: 10,
+                elevation: 16,
+                style: const TextStyle(color: Colors.black87),
+                underline: Container(
+                  height: 2,
+                  color: Colors.blue,
+                ),
+                onChanged: (StatusPago newValueEnvio) {
+                  setState(() {
+                    statusValuePago = newValueEnvio;
+                  });
+                },
+                items: listaStatusPago.map((StatusPago statusPago) {
+                  return new DropdownMenuItem<StatusPago>(
+                    value: statusPago,
+                    child: new Text(
+                      statusPago.name,
+                      style: new TextStyle(color: Colors.black),
+                    ),
+                  );
+                }).toList(),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: medPadding),
+                child: BotonRestTest(
+                  token: sharedPrefs.clientToken,
+                  url: '${urlApi}actualizar/estatus-orden',
+                  formkey: formKey,
+                  arrayData: {
+                    "id_de_orden": jsonOrden['id_de_orden'],
+                    "estatus_de_envio": jsonOrden['estatus_de_envio'],
+                    "estatus_de_orden": jsonOrden['estatus_de_orden'],
+                    "estatus_de_pago": statusValuePago.id,
                     "comments": null
                   },
                   method: 'post',

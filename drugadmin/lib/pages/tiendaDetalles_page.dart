@@ -622,6 +622,8 @@ class _TabAceptadaState extends State<TiendaDetalles> {
             },
           ),
           DropdownButtonFormField<String>(
+            focusColor: Theme.of(context).primaryColor,
+            // dropdownColor: Theme.of(context).primaryColor,
             isExpanded: true,
             hint: Text("Tipo de persona"),
             value: tipoPersona,
@@ -633,7 +635,8 @@ class _TabAceptadaState extends State<TiendaDetalles> {
                     padding: EdgeInsets.only(left: 7),
                     child: Row(
                       children: [
-                        Icon(Icons.store_outlined),
+                        Icon(Icons.store_outlined,
+                            color: Theme.of(context).primaryColor),
                         SizedBox(
                           width: 7,
                         ),
@@ -665,7 +668,8 @@ class _TabAceptadaState extends State<TiendaDetalles> {
                     padding: EdgeInsets.only(left: 7),
                     child: Row(
                       children: [
-                        Icon(Icons.store_outlined),
+                        Icon(Icons.store_outlined,
+                            color: Theme.of(context).primaryColor),
                         SizedBox(
                           width: 7,
                         ),
