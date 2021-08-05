@@ -343,18 +343,24 @@ class _OrdenDetallesState extends State<OrdenDetalles> {
 
     var iconCard = Icons.payment_outlined;
 
-    switch (numCard['card']['brand']) {
-      case 'visa':
-        iconCard = (FontAwesomeIcons.ccVisa);
-        break;
-      case 'mastercard':
-        iconCard = FontAwesomeIcons.ccMastercard;
-        break;
-      case 'americanexpress':
-        iconCard = FontAwesomeIcons.ccAmex;
-        break;
-      default:
-        iconCard = Icons.payment_outlined;
+    if (jsonOrden['detalles_cargo'] != null) {
+      numCard = jsonDecode(jsonOrden['detalles_cargo'].toString());
+
+      iconCard = Icons.payment_outlined;
+
+      switch (numCard['card']['brand']) {
+        case 'visa':
+          iconCard = (FontAwesomeIcons.ccVisa);
+          break;
+        case 'mastercard':
+          iconCard = FontAwesomeIcons.ccMastercard;
+          break;
+        case 'americanexpress':
+          iconCard = FontAwesomeIcons.ccAmex;
+          break;
+        default:
+          iconCard = Icons.payment_outlined;
+      }
     }
 
     return Container(
@@ -395,7 +401,9 @@ class _OrdenDetallesState extends State<OrdenDetalles> {
             infoOrden(jsonOrden['mail'], Icons.mail_outline, context),
             infoOrden(
                 jsonOrden['telefono_contacto'], Icons.phone_outlined, context),
-            infoOrden(numCard['card']['card_number'], iconCard, context),
+            iconCard != null
+                ? infoOrden(numCard['card']['card_number'], iconCard, context)
+                : Container(),
             infoOrden(
                 jsonOrden['calle'].toString() +
                     ',' +
