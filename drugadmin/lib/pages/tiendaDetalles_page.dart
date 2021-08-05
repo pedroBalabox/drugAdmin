@@ -1,5 +1,6 @@
 import 'dart:convert';
-
+import 'dart:io';
+import 'dart:html' as html;
 import 'package:codigojaguar/codigojaguar.dart';
 import 'package:drugadmin/model/farmacia_model.dart';
 import 'package:drugadmin/service/restFunction.dart';
@@ -7,8 +8,13 @@ import 'package:drugadmin/service/sharedPref.dart';
 import 'package:drugadmin/utils/globals.dart';
 import 'package:drugadmin/utils/theme.dart';
 import 'package:drugadmin/widget/drawerVendedor_widget.dart';
+import 'package:drugadmin/widget/testRest.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:http/http.dart' as http;
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 class Status {
   const Status(this.id, this.name);
@@ -33,6 +39,10 @@ class _TabAceptadaState extends State<TiendaDetalles> {
   RestFun rest = RestFun();
 
   FarmaciaModel farmaciaModel = FarmaciaModel();
+  var mediaData;
+  Image pickedImage;
+  var imagePath;
+  String base64Image;
 
   var jsonDetalles;
 
@@ -43,7 +53,16 @@ class _TabAceptadaState extends State<TiendaDetalles> {
   Status statusValue;
   List<Status> listaStatus = [];
 
+  String tipoPersona;
+
   String logoUrl;
+
+  var giroFarmacia = [
+    'Farmacia de medicamentos',
+    'Farmacia productos ',
+    'Farmacia especializada',
+    'Venta minorista'
+  ];
 
   @override
   void initState() {
@@ -52,6 +71,7 @@ class _TabAceptadaState extends State<TiendaDetalles> {
     sharedPrefs.init();
     Jiffy.locale('es');
     setState(() {
+      tipoPersona = farmaciaModel.tipoPersona == "fisica" ? "Física" : "Moral";
       date = Jiffy(farmaciaModel.creation_date).format('MMMM do yyyy, h:mm a');
       logoUrl = farmaciaModel.logo;
     });
@@ -60,6 +80,102 @@ class _TabAceptadaState extends State<TiendaDetalles> {
     listaStatus.add(Status('waiting_for_review', 'Esperando revisión'));
     listaStatus.add(Status('blocked', 'Bloqueada'));
     getDetalles();
+  }
+
+  Future<Null> _selectDate(BuildContext context) async {
+    final DateTime picked = await showMonthPicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(DateTime.now().year - 10),
+        lastDate: DateTime(DateTime.now().year + 2));
+    if (picked != null) {
+      setState(() {
+        print(picked.month);
+        print(picked.year);
+        print(sharedPrefs.clientToken);
+        launchURL('https://sandbox.app.drugsiteonline.com/report.php?DrJWT=' +
+            sharedPrefs.clientToken +
+            "&farmacia_id=" +
+            farmaciaModel.farmacia_id +
+            "&year=" +
+            picked.year.toString() +
+            "&month=" +
+            picked.month.toString());
+        //bannerModel.fechaDeExposicion = DateFormat('yyyy-MM-dd').format(picked);
+      });
+    }
+  }
+
+  Future<void> _showYearMonthPicker(context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Descargar reporte de ventas',
+            style: TextStyle(color: Colors.black87),
+          ),
+          content: Container(
+            height: 80,
+            child: Column(
+              children: [
+                Container(
+                  child: Text(
+                      "Selecciona un mes y un año para descargar el reporte de ventas"),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                InkWell(
+                    onTap: () {
+                      _selectDate(context);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      child: Text("Seleccionar fecha"),
+                    ))
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                  child: Text(
+                    'Cancelar',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  pickImage() async {
+    final _picker = ImagePicker();
+    PickedFile image =
+        await _picker.getImage(source: ImageSource.gallery, imageQuality: 80);
+    var imgBase64Str;
+    if (kIsWeb) {
+      http.Response response = await http.get(Uri.parse(image.path));
+      final bytes = response?.bodyBytes;
+      imgBase64Str = base64Encode(bytes);
+    } else {
+      List<int> imageBytes = await File(image.path).readAsBytes();
+      imgBase64Str = base64Encode(imageBytes);
+    }
+    setState(() {
+      imagePath = image;
+      base64Image = imgBase64Str.toString();
+    });
   }
 
   getDetalles() async {
@@ -231,45 +347,56 @@ class _TabAceptadaState extends State<TiendaDetalles> {
       }
     }
 
-    return Container(
-      padding: EdgeInsets.all(smallPadding * 2),
-      width: size.width,
-      // height: size.height,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Color.fromRGBO(0, 0, 0, 0.1),
-            blurRadius: 5.0, // soften the shadow
-            spreadRadius: 1.0, //extend the shadow
-            offset: Offset(
-              0.0, // Move to right 10  horizontally
-              3.0, // Move to bottom 10 Vertically
+    return Column(
+      children: [
+        Container(
+          padding: EdgeInsets.all(smallPadding * 2),
+          width: size.width,
+          // height: size.height,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Color.fromRGBO(0, 0, 0, 0.1),
+                blurRadius: 5.0, // soften the shadow
+                spreadRadius: 1.0, //extend the shadow
+                offset: Offset(
+                  0.0, // Move to right 10  horizontally
+                  3.0, // Move to bottom 10 Vertically
+                ),
+              )
+            ],
+          ),
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Text('Verificación de la tienda',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18)),
+            Text(
+              '$textValue',
+              style: TextStyle(fontSize: 15),
             ),
-          )
-        ],
-      ),
-      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Text('Verificación de la tienda',
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.w700,
-                fontSize: 18)),
-        Text(
-          '$textValue',
-          style: TextStyle(fontSize: 15),
+            Transform.scale(
+                scale: 1,
+                child: Switch(
+                  onChanged: toggleSwitch,
+                  value: isSwitched,
+                  activeColor: Theme.of(context).accentColor,
+                  activeTrackColor: Colors.grey[300],
+                  inactiveThumbColor: Colors.grey[300],
+                  inactiveTrackColor: Colors.grey,
+                )),
+          ]),
         ),
-        Transform.scale(
-            scale: 1,
-            child: Switch(
-              onChanged: toggleSwitch,
-              value: isSwitched,
-              activeColor: Theme.of(context).accentColor,
-              activeTrackColor: Colors.grey[300],
-              inactiveThumbColor: Colors.grey[300],
-              inactiveTrackColor: Colors.grey,
-            )),
-      ]),
+        TextButton(
+          onPressed: () {
+            _showYearMonthPicker(context);
+            //_selectDate(context);
+          },
+          child: Text("Descargar reporte de ventas mensual"),
+        )
+      ],
     );
   }
 
@@ -402,10 +529,20 @@ class _TabAceptadaState extends State<TiendaDetalles> {
                 decoration: BoxDecoration(
                     gradient: gradientDrug,
                     borderRadius: BorderRadius.circular(100)),
-                child: CircleAvatar(
-                  backgroundImage: logoUrl == null
-                      ? AssetImage('images/logoDrug.png')
-                      : NetworkImage(logoUrl),
+                child: InkWell(
+                  onTap: () async {
+                    await pickImage();
+                    setState(() {});
+                  },
+                  child: CircleAvatar(
+                    backgroundImage: imagePath != null
+                        ? !kIsWeb
+                            ? FileImage(File(imagePath.path))
+                            : NetworkImage(imagePath.path)
+                        : logoUrl == null
+                            ? AssetImage('images/logoDrug.png')
+                            : NetworkImage(logoUrl),
+                  ),
                 ),
               ),
             ),
@@ -429,58 +566,126 @@ class _TabAceptadaState extends State<TiendaDetalles> {
       child: Column(
         children: [
           EntradaTexto(
-            habilitado: false,
+            habilitado: true,
             valorInicial: farmaciaModel.nombre,
             estilo: inputPrimarystyle(
                 context, Icons.store_outlined, 'Nombre comercial', null),
             tipoEntrada: TextInputType.emailAddress,
             textCapitalization: TextCapitalization.words,
             tipo: 'typeValidator',
+            onChanged: (value) {
+              setState(() {
+                farmaciaModel.nombre = value;
+              });
+            },
           ),
           EntradaTexto(
-            habilitado: false,
+            habilitado: true,
             valorInicial: farmaciaModel.nombrePropietario,
             estilo: inputPrimarystyle(
                 context, Icons.person_outline, 'Nombre del propietario', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
             tipo: 'typeValidator',
+            onChanged: (value) {
+              setState(() {
+                farmaciaModel.nombrePropietario = value;
+              });
+            },
           ),
           EntradaTexto(
-            habilitado: false,
+            habilitado: true,
             valorInicial: farmaciaModel.correo,
             estilo:
                 inputPrimarystyle(context, Icons.mail_outline, 'Correo', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
             tipo: 'typeValidator',
+            onChanged: (value) {
+              setState(() {
+                farmaciaModel.correo = value;
+              });
+            },
           ),
           EntradaTexto(
-            habilitado: false,
+            habilitado: true,
             valorInicial: farmaciaModel.rfc,
             estilo:
                 inputPrimarystyle(context, Icons.store_outlined, 'RFC', null),
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
             tipo: 'typeValidator',
+            onChanged: (value) {
+              setState(() {
+                farmaciaModel.rfc = value;
+              });
+            },
           ),
-          EntradaTexto(
-            habilitado: false,
-            valorInicial: farmaciaModel.tipoPersona,
-            estilo: inputPrimarystyle(
-                context, Icons.store_outlined, 'Moral/física', null),
-            tipoEntrada: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            tipo: 'typeValidator',
+          DropdownButtonFormField<String>(
+            isExpanded: true,
+            hint: Text("Tipo de persona"),
+            value: tipoPersona,
+            items: ["Moral", "Física"].map((value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Container(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 7),
+                    child: Row(
+                      children: [
+                        Icon(Icons.store_outlined),
+                        SizedBox(
+                          width: 7,
+                        ),
+                        Text("Tipo de persona: " + value.toString()),
+                      ],
+                    ),
+                  ),
+                  // height: 5.0,
+                ),
+              );
+            }).toList(),
+            onChanged: (String val) {
+              setState(() {
+                tipoPersona = val;
+                farmaciaModel.tipoPersona =
+                    val == "Física" ? "fisica" : "moral";
+              });
+            },
           ),
-          EntradaTexto(
-            habilitado: false,
-            valorInicial: farmaciaModel.giro,
-            estilo:
-                inputPrimarystyle(context, Icons.store_outlined, 'Giro', null),
-            tipoEntrada: TextInputType.name,
-            textCapitalization: TextCapitalization.words,
-            tipo: 'typeValidator',
+          DropdownButtonFormField<String>(
+            isExpanded: true,
+            hint: Text("Giro del negocio"),
+            value: farmaciaModel.giro,
+            items: giroFarmacia.map((value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Container(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 7),
+                    child: Row(
+                      children: [
+                        Icon(Icons.store_outlined),
+                        SizedBox(
+                          width: 7,
+                        ),
+                        Text("Giro del negocio: " + value.toString()),
+                      ],
+                    ),
+                  ),
+                  // height: 5.0,
+                ),
+              );
+            }).toList(),
+            onChanged: (String val) {
+              setState(() {
+                // tipoPersona = val;
+                farmaciaModel.giro = val;
+              });
+            },
+          ),
+          SizedBox(
+            height: smallPadding * 2,
           ),
           EntradaTexto(
             habilitado: false,
@@ -490,6 +695,49 @@ class _TabAceptadaState extends State<TiendaDetalles> {
             tipoEntrada: TextInputType.name,
             textCapitalization: TextCapitalization.words,
             tipo: 'typeValidator',
+          ),
+          SizedBox(
+            height: smallPadding * 2,
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: medPadding * 2),
+            child: BotonRestTest(
+                showSuccess: true,
+                token: sharedPrefs.clientToken,
+                url: '$apiUrl/actualizar/farmacia',
+                method: 'post',
+                formkey: formKey,
+                arrayData: {
+                  'farmacia_id': farmaciaModel.farmacia_id,
+                  "nombre": farmaciaModel.nombre,
+                  "nombre_propietario": farmaciaModel.nombrePropietario,
+                  "rfc": farmaciaModel.rfc,
+                  "tipo_persona": farmaciaModel.tipoPersona,
+                  "correo": farmaciaModel.correo,
+                  "giro": farmaciaModel.giro,
+                  "base64": base64Image == null ? null : base64Image
+                },
+                contenido: Text(
+                  'Guardar',
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.fade,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                /* action: (value) => Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/farmacia/miTienda/',
+                      ModalRoute.withName('/farmacia/miCuenta'),
+                    ).then((value) => setState(() {})), */
+                action: (value) => () {},
+                errorStyle: TextStyle(
+                  color: Colors.red[700],
+                  fontWeight: FontWeight.w600,
+                ),
+                estilo: estiloBotonPrimary),
           ),
         ],
       ),

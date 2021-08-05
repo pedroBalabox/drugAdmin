@@ -38,7 +38,7 @@ class EntradaTextoTest extends StatefulWidget {
       this.tipoEntrada = TextInputType.name,
       this.onEditingComplete,
       this.formkey,
-      this.validacionStr = 'Campo olbigatorio',
+      this.validacionStr = 'Campo obligatorio',
       this.requerido = true,
       this.focusnode})
       : super(key: key);

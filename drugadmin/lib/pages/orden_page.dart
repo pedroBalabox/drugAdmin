@@ -285,6 +285,12 @@ const kTableColumns = <DataColumn>[
       style: TextStyle(fontWeight: FontWeight.w900),
     ),
   ),
+  DataColumn(
+    label: Text(
+      'Dirección de envío',
+      style: TextStyle(fontWeight: FontWeight.w900),
+    ),
+  ),
 ];
 
 ////// Data source class for obtaining row data for PaginatedDataTable.
@@ -375,6 +381,11 @@ class DataSource extends DataTableSource {
           DataCell(Text(estatusOrden)),
           DataCell(Text(estatusEnvio)),
           DataCell(Text('${_myData['cliente']}')),
+          DataCell(Container(
+            width: 200,
+            child: Text(
+                '${_myData['calle']}, ${_myData['colonia']}, No. Ext ${_myData['numero_exterior']}, No. Int ${_myData['numero_interior']}, ${_myData['codigo_postal']}'),
+          )),
         ]);
   }
 
