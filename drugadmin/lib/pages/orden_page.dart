@@ -23,6 +23,7 @@ class _OrdenPageState extends State<OrdenPage> {
   RestFun rest = RestFun();
 
   String filterValue = 'Confirmado';
+  String paymentFilterValue = 'Todas';
 
   String errorStr;
   bool load = true;
@@ -31,14 +32,27 @@ class _OrdenPageState extends State<OrdenPage> {
   List searchList = [];
   bool _isSearching = false;
 
+  String currentStatusFilter;
+  String currentPaymentStatusFilter;
+
   @override
   void initState() {
     super.initState();
     sharedPrefs.init().then((value) => getOrden('confirmed'));
   }
 
-  getOrden(String status) async {
-    var arrayData = {"estatus": status};
+  getOrden([
+    String status,
+    String paymentStatus,
+  ]) async {
+    currentStatusFilter = status;
+    currentPaymentStatusFilter = paymentStatus;
+
+    var arrayData = {
+      "estatus": currentStatusFilter,
+      "estatus_de_pago": currentPaymentStatusFilter
+    };
+
     await rest
         .restService(
             arrayData, '${urlApi}ver/ordenes', sharedPrefs.clientToken, 'post')
@@ -149,11 +163,21 @@ class _OrdenPageState extends State<OrdenPage> {
         actions: [
           MediaQuery.of(context).size.width > 700
               ? Text(
-                  'Estatus:',
+                  'Estatus de pedido:',
                   style: TextStyle(fontSize: 15),
                 )
               : Container(),
-          filterOption()
+          filterOption(),
+          SizedBox(
+            width: 10,
+          ),
+          MediaQuery.of(context).size.width > 700
+              ? Text(
+                  'Estatus de pago:',
+                  style: TextStyle(fontSize: 15),
+                )
+              : Container(),
+          paymentFilterOption()
         ],
         showCheckboxColumn: false,
         columns: kTableColumns,
@@ -181,28 +205,28 @@ class _OrdenPageState extends State<OrdenPage> {
         });
         switch (newValue) {
           case 'En revisión':
-            getOrden('in_process');
+            getOrden('in_process', currentPaymentStatusFilter);
             break;
           case 'Confirmado':
-            getOrden('confirmed');
+            getOrden('confirmed', currentPaymentStatusFilter);
             break;
           case 'En camino':
-            getOrden('shipped');
+            getOrden('shipped', currentPaymentStatusFilter);
             break;
           case 'Entregado':
-            getOrden('delivered');
+            getOrden('delivered', currentPaymentStatusFilter);
             break;
           case 'Cancelado':
-            getOrden('cancelled');
+            getOrden('cancelled', currentPaymentStatusFilter);
             break;
           case 'Esperando pago':
-            getOrden('waiting_for_payment');
+            getOrden('waiting_for_payment', currentPaymentStatusFilter);
             break;
           case 'Todas':
-            getOrden(null);
+            getOrden(null, currentPaymentStatusFilter);
             break;
           default:
-            getOrden(null);
+            getOrden(null, currentPaymentStatusFilter);
         }
       },
       items: <String>[
@@ -213,6 +237,53 @@ class _OrdenPageState extends State<OrdenPage> {
         'Entregado',
         'Cancelado',
         'Esperando pago'
+      ].map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+    );
+  }
+
+  paymentFilterOption() {
+    return DropdownButton<String>(
+      value: paymentFilterValue,
+      icon: const Icon(Icons.arrow_drop_down),
+      iconSize: 10,
+      elevation: 16,
+      style: const TextStyle(color: Colors.black87),
+      underline: Container(
+        height: 2,
+        color: Colors.blue,
+      ),
+      onChanged: (String newValue) {
+        setState(() {
+          paymentFilterValue = newValue;
+          load = true;
+        });
+        switch (newValue) {
+          case 'Pagado por cliente':
+            getOrden(currentStatusFilter, 'oder_paid_by_client');
+            break;
+          case 'Pagado a tienda':
+            getOrden(currentStatusFilter, 'order_paid_to_store');
+            break;
+          case 'Rechazado':
+            getOrden(currentStatusFilter, 'order_payment_rejected');
+            break;
+          case 'Todas':
+            getOrden(currentStatusFilter, null);
+            break;
+          default:
+            getOrden(currentStatusFilter, null);
+        }
+      },
+      items: <String>[
+        'Todas',
+        'Pagado por cliente',
+        'Pagado a tienda',
+        'Rechazado'
       ].map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
@@ -281,7 +352,7 @@ const kTableColumns = <DataColumn>[
   ),
   DataColumn(
     label: Text(
-      'Dirección de pago',
+      'Estatus de pago',
       style: TextStyle(fontWeight: FontWeight.w900),
     ),
   ),
