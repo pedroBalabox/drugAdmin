@@ -12,39 +12,39 @@ ProductoModel productoModelFromJson(String str) =>
 String productoModelToJson(ProductoModel data) => json.encode(data.toJson());
 
 class ProductoModel {
-  ProductoModel({
-    this.id,
-    this.idDeProducto,
-    this.farmaciaId,
-    this.sku,
-    this.requiereReceta,
-    this.nombre,
-    this.descripcion,
-    this.marca,
-    this.precio,
-    this.precioConDescuento,
-    this.precioMayoreo,
-    this.cantidadMayoreo,
-    this.stock,
-    this.categoria,
-    this.subcategoria1,
-    this.subcategoria2,
-    this.subcategoria3,
-    this.etiqueta1,
-    this.etiqueta2,
-    this.etiqueta3,
-    this.etiqueta4,
-    this.etiqueta5,
-    this.status,
-    this.fechaDeCreacion,
-    this.galeria,
-    this.cantidad,
-    this.nombre_farmacia,
-    this.favorito,
-    this.categorias,
-    this.etiquetas,
-    this.rating,
-  });
+  ProductoModel(
+      {this.id,
+      this.idDeProducto,
+      this.farmaciaId,
+      this.sku,
+      this.requiereReceta,
+      this.nombre,
+      this.descripcion,
+      this.marca,
+      this.precio,
+      this.precioConDescuento,
+      this.precioMayoreo,
+      this.cantidadMayoreo,
+      this.stock,
+      this.categoria,
+      this.subcategoria1,
+      this.subcategoria2,
+      this.subcategoria3,
+      this.etiqueta1,
+      this.etiqueta2,
+      this.etiqueta3,
+      this.etiqueta4,
+      this.etiqueta5,
+      this.status,
+      this.fechaDeCreacion,
+      this.galeria,
+      this.cantidad,
+      this.nombre_farmacia,
+      this.favorito,
+      this.categorias,
+      this.etiquetas,
+      this.rating,
+      this.envio_24_hrs});
 
   dynamic id;
   String idDeProducto;
@@ -77,6 +77,7 @@ class ProductoModel {
   dynamic categorias;
   dynamic etiquetas;
   dynamic rating;
+  dynamic envio_24_hrs;
 
   factory ProductoModel.fromJson(dynamic json) => ProductoModel(
       id: json["id"],
@@ -109,7 +110,8 @@ class ProductoModel {
       favorito: json["favorito"],
       categorias: json["categorias"],
       etiquetas: json["etiquetas"],
-      rating: json["rating"]);
+      rating: json["rating"],
+      envio_24_hrs: json["envio_24_hrs"]);
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -142,6 +144,7 @@ class ProductoModel {
         "favorito": favorito,
         "categorias": categorias,
         "etiquetas": etiquetas,
-        "rating": rating
+        "rating": rating,
+        "envio_24_hrs": envio_24_hrs
       };
 }

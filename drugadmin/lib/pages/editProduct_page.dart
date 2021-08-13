@@ -87,6 +87,8 @@ class _EditarProductoState extends State<EditarProducto> {
 
   bool conReceta = false;
 
+  bool envio24hrs = false;
+
   @override
   void initState() {
     super.initState();
@@ -94,6 +96,7 @@ class _EditarProductoState extends State<EditarProducto> {
     productoModel = ProductoModel.fromJson(widget.jsonProducto.jsonData);
     setState(() {
       conReceta = productoModel.requiereReceta == 'SI' ? true : false;
+      envio24hrs = productoModel.envio_24_hrs == 'NO' ? false : true;
       jsonGallery = jsonDecode(jsonEncode(productoModel.galeria));
     });
 
@@ -323,6 +326,7 @@ class _EditarProductoState extends State<EditarProducto> {
               "id_de_producto": productoModel.idDeProducto,
               "sku": productoModel.sku,
               "requiere_receta": conReceta ? 'SI' : 'NO',
+              'envio_24_hrs': envio24hrs ? 'SI' : 'NO',
               "nombre": productoModel.nombre,
               "descripcion": productoModel.descripcion,
               "marca": productoModel.marca,
@@ -622,8 +626,9 @@ class _EditarProductoState extends State<EditarProducto> {
           children: [
             Center(
                 child: jsonGallery[index]['type'] == 'network'
-                    ? Image.network("${jsonGallery[index]['url']}",
-                        fit: BoxFit.cover)
+                    ? getNetworkImage(jsonGallery[index]['url'])
+                    // ? Image.network("${jsonGallery[index]['url']}",
+                    //     fit: BoxFit.cover)
                     : Image.memory(base64Decode(jsonGallery[index]['path']),
                         fit: BoxFit.cover)),
             InkWell(
@@ -906,6 +911,22 @@ class _EditarProductoState extends State<EditarProducto> {
                   )
                 ],
               ))
+            ],
+          ),
+          SizedBox(
+            height: smallPadding,
+          ),
+          Row(
+            children: [
+              Text('Envio en 24 horas'),
+              Switch(
+                value: envio24hrs,
+                onChanged: (value) {
+                  setState(() {
+                    envio24hrs = value;
+                  });
+                },
+              )
             ],
           )
         ],

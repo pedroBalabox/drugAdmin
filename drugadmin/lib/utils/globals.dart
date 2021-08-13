@@ -7,6 +7,33 @@ var apiUrl = 'https://sandbox.app.drugsiteonline.com';
 // var apiUrl = 'https://api.production.drugsiteonline.com';
 
 
+
+getNetworkImage(String path) {
+  return Image.network(
+    path,
+    fit: BoxFit.cover,
+    errorBuilder:
+        (BuildContext context, Object exception, StackTrace stackTrace) {
+      return Image.asset('images/logoDrug.png');
+    },
+    loadingBuilder:
+        (BuildContext ctx, Widget child, ImageChunkEvent loadingProgress) {
+      if (loadingProgress == null) {
+        return child;
+      } else {
+        return Container(
+          color: Colors.white,
+          child: Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+            ),
+          ),
+        );
+      }
+    },
+  );
+}
+
 messageToUser(key, String message) {
   final snackBar = SnackBar(content: Text(message));
   key.currentState.showSnackBar(snackBar);

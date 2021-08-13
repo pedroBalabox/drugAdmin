@@ -279,6 +279,12 @@ const kTableColumns = <DataColumn>[
   ),
   DataColumn(
     label: Text(
+      'Tipo de usuario',
+      style: TextStyle(fontWeight: FontWeight.w900),
+    ),
+  ),
+  DataColumn(
+    label: Text(
       'Correo',
       style: TextStyle(fontWeight: FontWeight.w900),
     ),
@@ -329,6 +335,55 @@ class DataSource extends DataTableSource {
 
     Icon iconStatus;
 
+    String userTag;
+
+    switch (_myData['client_tag'].toString()) {
+      case 'general':
+        userTag = 'Público en general';
+        break;
+      case 'general_doctor':
+        userTag = 'Médico General';
+        break;
+      case 'specialist_doctor':
+        userTag = 'Médico Especialista';
+        break;
+      case 'professional':
+        userTag = 'Profesional de la salud';
+        break;
+      case 'general_pharmacy':
+        userTag = 'Farmacia General';
+        break;
+      case 'specialized_pharmacy':
+        userTag = 'Farmacia especializada';
+        break;
+      case 'clinic':
+        userTag = 'Clínica';
+        break;
+      case 'hospital':
+        userTag = 'Hospital';
+        break;
+      case 'health_company':
+        userTag = 'Empresa Sector Salud';
+        break;
+      case 'distributor':
+        userTag = 'Distribuidor Farmacéutico';
+        break;
+      case 'wholesaler':
+        userTag = 'Mayorista Farmacéutico';
+        break;
+      case 'retailer':
+        userTag = 'Minorista Farmacéutico';
+        break;
+      case 'importer':
+        userTag = 'Importadora';
+        break;
+      case 'marketer':
+        userTag = 'Comercializadora';
+        break;
+      default:
+        userTag = 'Desconocido';
+    }
+
     return DataRow.byIndex(
         index: index, // DONT MISS THIS
         onSelectChanged: (bool value) {
@@ -350,6 +405,7 @@ class DataSource extends DataTableSource {
           DataCell(Text('${_myData['name']}')),
           DataCell(Text('${_myData['first_lastname']}')),
           DataCell(Text('${_myData['second_lastname']}')),
+          DataCell(Text(userTag)),
           DataCell(Text('${_myData['mail']}')),
           DataCell(Text('${_myData['phone']}')),
           // DataCell(Text(_myData['type'] == 'client' ? 'Cliente' : 'Vendedor')),
