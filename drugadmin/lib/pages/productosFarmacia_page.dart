@@ -46,7 +46,7 @@ class _VerProductosState extends State<VerProductos> {
   @override
   void initState() {
     super.initState();
-    print('----' + widget.jsonData.jsonData.toString());
+    //print('----' + widget.jsonData.jsonData.toString());
     sharedPrefs.init().then((value) => getProductos());
   }
 

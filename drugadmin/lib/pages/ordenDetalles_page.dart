@@ -672,7 +672,7 @@ class _OrdenDetallesState extends State<OrdenDetalles> {
         .restService(arrayData, '${urlApi}farmacia/actualizar-estatus',
             sharedPrefs.clientToken, 'post')
         .then((value) {
-      print(value);
+      //print(value);
       load = true;
       getDetalles();
     });

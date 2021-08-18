@@ -187,7 +187,7 @@ class _LoginPageState extends State<LoginPage> {
                     // SizedBox(height: smallPadding * 1.25),
                     InkWell(
                       onTap: () =>
-                          launchURL('https://app.drugsiteonline.com/login'),
+                          launchURL('$baseFrontUrl/login'),
                       child: RichText(
                         textAlign: TextAlign.center,
                         text: TextSpan(
@@ -420,7 +420,7 @@ class _LoginPageState extends State<LoginPage> {
         .restService(
             '', '${urlApi}perfil/usuario', sharedPrefs.clientToken, 'get')
         .then((value) {
-      print(value);
+      //print(value);
       if (value['status'] == 'server_true') {
         var jsonUser = jsonDecode(value['response']);
         userModel = UserModel.fromJson(jsonUser[1]);

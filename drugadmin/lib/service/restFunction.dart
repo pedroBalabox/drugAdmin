@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:drugadmin/utils/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' show Client;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
-String urlApi = "https://sandbox.app.drugsiteonline.com/";
-// String urlApi = "https://api.production.drugsiteonline.com/";
+String urlApi = apiUrl + "/";
 
 class RestFun {
   Client client = Client();

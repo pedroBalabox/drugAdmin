@@ -197,7 +197,11 @@ class _DetallesCatState extends State<DetallesCat> {
 
   pickImage() async {
     final _picker = ImagePicker();
-    PickedFile image = await _picker.getImage(source: ImageSource.gallery);
+    PickedFile image = await _picker.getImage(
+        source: ImageSource.gallery,
+        maxHeight: 500,
+        maxWidth: 500,
+        imageQuality: 70);
     // final imgBase64Str = await kIsWeb
     //     ? networkImageToBase64(image.path)
     //     : mobileb64(File(image.path));

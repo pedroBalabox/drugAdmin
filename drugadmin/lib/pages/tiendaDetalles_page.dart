@@ -58,10 +58,15 @@ class _TabAceptadaState extends State<TiendaDetalles> {
   String logoUrl;
 
   var giroFarmacia = [
-    'Farmacia de medicamentos',
-    'Farmacia productos ',
-    'Farmacia especializada',
-    'Venta minorista'
+    'Farmacia',
+    'Farmacia Especializada',
+    'Laboratorio',
+    'Marca',
+    'Mayorista',
+    'Minorista',
+    'Importadora',
+    'Comercializadora',
+    'Distribuidor'
   ];
 
   @override
@@ -93,7 +98,7 @@ class _TabAceptadaState extends State<TiendaDetalles> {
         print(picked.month);
         print(picked.year);
         print(sharedPrefs.clientToken);
-        launchURL('https://sandbox.app.drugsiteonline.com/report.php?DrJWT=' +
+        launchURL('$baseFrontUrl/report.php?DrJWT=' +
             sharedPrefs.clientToken +
             "&farmacia_id=" +
             farmaciaModel.farmacia_id +

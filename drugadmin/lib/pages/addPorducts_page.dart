@@ -74,7 +74,7 @@ class _AddProductsState extends State<AddProducts> {
           allowCompression: true);
 
       var uri = Uri.dataFromBytes(result.files.first.bytes).toString();
-      print(result.files.single.size);
+      //print(result.files.single.size);
       if (result.files.single.size <= 10000000) {
         setState(() {
           docName = result.files.single.name;
@@ -238,7 +238,7 @@ class _AddProductsState extends State<AddProducts> {
                 BotonSimple(
                     action: () {
                       launchURL(
-                          "https://app.drugsiteonline.com/descargas/plantilla_productos_drug.csv");
+                          '$baseFrontUrl/descargas/plantilla_productos_drug.csv');
                     },
                     estilo: estiloBotonPrimary,
                     contenido: Text(

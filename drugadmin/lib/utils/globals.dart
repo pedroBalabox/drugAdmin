@@ -3,8 +3,15 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-var apiUrl = 'https://sandbox.app.drugsiteonline.com';
-// var apiUrl = 'https://api.production.drugsiteonline.com';
+var isSandbox = true;
+
+var apiUrl = isSandbox
+    ? 'https://sandbox.api.drugmexico.com'
+    : 'https://api.drugmexico.com';
+
+var baseFrontUrl = isSandbox
+    ? 'https://sandbox.admin.drugmexico.com'
+    : 'https://admin.drugmexico.com';
 
 
 
@@ -109,7 +116,7 @@ Widget footerVendedor(context) {
               recognizer: new TapGestureRecognizer()
                 ..onTap = () {
                   launchURL(
-                      'https://app.drugsiteonline.com/farmacia/terminos-y-condiciones');
+                      'https://drugsiteonline.com/terminos-y-condiciones/');
                 },
               text: 'Términos y condiciones',
               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),

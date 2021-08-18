@@ -287,7 +287,7 @@ class _MiCuentaPageState extends State<MiCuentaPage> {
                   ),
                 ),
                 action: (value) {
-                  print(value);
+                  //print(value);
                   RestFun rest = RestFun();
                   rest
                       .restService('', '${urlApi}perfil/usuario',
