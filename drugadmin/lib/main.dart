@@ -7,7 +7,6 @@ import 'package:drugadmin/pages/editProduct_page.dart';
 import 'package:drugadmin/pages/lobby/lobbyAdmin.dart';
 import 'package:drugadmin/pages/ordenDetalles_page.dart';
 import 'package:drugadmin/pages/productosFarmacia_page.dart';
-import 'package:drugadmin/pages/productosTienda_page.dart';
 import 'package:drugadmin/pages/tiendaDetalles_page.dart';
 import 'package:drugadmin/utils/route.dart';
 import 'package:drugadmin/utils/theme.dart';
@@ -97,7 +96,7 @@ class MyApp extends StatelessWidget {
           );
         }
 
-        if (settings.name == TiendaProductos.routeName) {
+        /* if (settings.name == TiendaProductos.routeName) {
           // Cast the arguments to the correct
           // type: ScreenArguments.
           final TiendaProductosDetailArguments args =
@@ -112,7 +111,7 @@ class MyApp extends StatelessWidget {
               );
             },
           );
-        }
+        } */
 
         if (settings.name == VerProductos.routeName) {
           // Cast the arguments to the correct

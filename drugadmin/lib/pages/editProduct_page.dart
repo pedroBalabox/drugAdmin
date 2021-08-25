@@ -17,6 +17,7 @@ import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
 import 'package:multi_select_flutter/util/multi_select_item.dart';
 import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 import 'package:drugadmin/widget/testRest.dart';
+import 'package:image/image.dart' as img;
 
 class Category {
   final String id;
@@ -579,34 +580,34 @@ class _EditarProductoState extends State<EditarProducto> {
   }
 
   pickImage() async {
+    int maxSize = 500;
+    int quality = 60;
+
     try {
       final _picker = ImagePicker();
-      PickedFile image =
-          await _picker.getImage(source: ImageSource.gallery, imageQuality: 30);
-      // final imgBase64Str = await kIsWeb
-      //     ? networkImageToBase64(image.path)
-      //     : mobileb64(File(image.path));
-      var imgBase64Str;
-
-      if (kIsWeb) {
-        http.Response response = await http.get(Uri.parse(image.path));
-        final bytes = response?.bodyBytes;
-        imgBase64Str = base64Encode(bytes);
-      } else {
-        List<int> imageBytes = await File(image.path).readAsBytes();
-        imgBase64Str = base64Encode(imageBytes);
-      }
-
-      setState(() {
-        base64Gallery.add(imgBase64Str);
-        var image = ImageGallery(id: '', path: imgBase64Str, type: 'base64');
-        var listOfMaps = List<Map<String, dynamic>>();
-        listOfMaps
-            .add({'id': image.id, 'path': image.path, 'type': image.type});
-        jsonGallery.add(listOfMaps[0]);
+      PickedFile image = await _picker.getImage(
+          source: ImageSource.gallery,
+          imageQuality: quality,
+          maxWidth: maxSize.toDouble(),
+          maxHeight: maxSize.toDouble());
+      showLoadingDialog(context, "Procesando imagen", "Espera un momento...");
+      Future.delayed(Duration(milliseconds: 500), () {
+        preprocessImage(image, context, maxSize, quality).then((base64) {
+          if (base64 != "") {
+            setState(() {
+              base64Gallery.add(base64);
+              var image = ImageGallery(id: '', path: base64, type: 'base64');
+              var listOfMaps = List<Map<String, dynamic>>();
+              listOfMaps.add(
+                  {'id': image.id, 'path': image.path, 'type': image.type});
+              jsonGallery.add(listOfMaps[0]);
+            });
+          }
+        });
       });
-      callback();
-    } catch (e) {}
+    } catch (e) {
+      showErrorDialog(context, "Error para obtener la imagen", e.toString());
+    }
   }
 
   callback() async {
@@ -784,20 +785,35 @@ class _EditarProductoState extends State<EditarProducto> {
               });
             },
           ),
-          EntradaTexto(
-            longMinima: 3,
-            longMaxima: 500,
-            valorInicial: productoModel.descripcion,
-            estilo: inputPrimarystyle(
+          TextFormField(
+            textCapitalization: TextCapitalization.sentences,
+            initialValue: productoModel.descripcion,
+            minLines: 3,
+            decoration: inputPrimarystyle(
                 context, Icons.info_outline, 'Descripción', null),
-            textCapitalization: TextCapitalization.words,
-            lineasMax: 7,
+            // keyboardType: TextInputType.multiline,
+            maxLines: 15,
+            textInputAction: TextInputAction.newline,
             onChanged: (value) {
               setState(() {
                 productoModel.descripcion = value;
               });
             },
           ),
+          // EntradaTexto(
+          //   longMinima: 3,
+          //   longMaxima: 500,
+          //   valorInicial: productoModel.descripcion,
+          //   estilo: inputPrimarystyle(
+          //       context, Icons.info_outline, 'Descripción', null),
+          //   textCapitalization: TextCapitalization.words,
+          //   lineasMax: 7,
+          //   onChanged: (value) {
+          //     setState(() {
+          //       productoModel.descripcion = value;
+          //     });
+          //   },
+          // ),
           Row(
             children: [
               Flexible(

@@ -12,7 +12,7 @@ import 'package:drugadmin/widget/testRest.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:image/image.dart' as img;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class MiCuentaPage extends StatefulWidget {
@@ -314,6 +314,33 @@ class _MiCuentaPageState extends State<MiCuentaPage> {
   }
 
   pickImage() async {
+    int maxSize = 500;
+    int quality = 60;
+
+    try {
+      final _picker = ImagePicker();
+      PickedFile image = await _picker.getImage(
+          source: ImageSource.gallery,
+          imageQuality: quality,
+          maxWidth: maxSize.toDouble(),
+          maxHeight: maxSize.toDouble());
+      showLoadingDialog(context, "Procesando imagen", "Espera un momento...");
+      Future.delayed(Duration(milliseconds: 500), () {
+        preprocessImage(image, context, maxSize, quality).then((base64) {
+          if (base64 != "") {
+            setState(() {
+              imagePath = image;
+              base64Image = base64.toString();
+            });
+          }
+        });
+      });
+    } catch (e) {
+      showErrorDialog(context, "Error para obtener la imagen", e.toString());
+    }
+  }
+
+  /* pickImage() async {
     final _picker = ImagePicker();
     PickedFile image = await _picker.getImage(source: ImageSource.gallery);
     // final imgBase64Str = await kIsWeb
@@ -323,7 +350,13 @@ class _MiCuentaPageState extends State<MiCuentaPage> {
     if (kIsWeb) {
       http.Response response = await http.get(Uri.parse(image.path));
       final bytes = response?.bodyBytes;
-      imgBase64Str = base64Encode(bytes);
+      //imgBase64Str = base64Encode(bytes);
+      int maxSize = 500;
+      img.Image chosenImage = img.decodeImage(bytes);
+      img.Image thumbnail = isLandscape(chosenImage)
+          ? img.copyResize(chosenImage, width: maxSize)
+          : img.copyResize(chosenImage, height: maxSize);
+      imgBase64Str = base64Encode(img.encodeJpg(thumbnail, quality: 60));
     } else {
       List<int> imageBytes = await File(image.path).readAsBytes();
       imgBase64Str = base64Encode(imageBytes);
@@ -332,5 +365,5 @@ class _MiCuentaPageState extends State<MiCuentaPage> {
       imagePath = image;
       base64Image = imgBase64Str.toString();
     });
-  }
+  } */
 }

@@ -13,6 +13,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
+import 'package:image/image.dart' as img;
 
 class CrearLabelCat extends StatefulWidget {
   final String type;
@@ -178,24 +179,30 @@ class _CrearLabelCatState extends State<CrearLabelCat> {
   }
 
   pickImage() async {
-    final _picker = ImagePicker();
-    PickedFile image = await _picker.getImage(source: ImageSource.gallery);
-    // final imgBase64Str = await kIsWeb
-    //     ? networkImageToBase64(image.path)
-    //     : mobileb64(File(image.path));
-    var imgBase64Str;
-    if (kIsWeb) {
-      http.Response response = await http.get(Uri.parse(image.path));
-      final bytes = response?.bodyBytes;
-      imgBase64Str = base64Encode(bytes);
-    } else {
-      List<int> imageBytes = await File(image.path).readAsBytes();
-      imgBase64Str = base64Encode(imageBytes);
+    int maxSize = 500;
+    int quality = 60;
+
+    try {
+      final _picker = ImagePicker();
+      PickedFile image = await _picker.getImage(
+          source: ImageSource.gallery,
+          imageQuality: quality,
+          maxWidth: maxSize.toDouble(),
+          maxHeight: maxSize.toDouble());
+      showLoadingDialog(context, "Procesando imagen", "Espera un momento...");
+      Future.delayed(Duration(milliseconds: 500), () {
+        preprocessImage(image, context, maxSize, quality).then((base64) {
+          if (base64 != "") {
+            setState(() {
+              imagePath = image;
+              imgBase64 = base64.toString();
+            });
+          }
+        });
+      });
+    } catch (e) {
+      showErrorDialog(context, "Error para obtener la imagen", e.toString());
     }
-    setState(() {
-      imagePath = image;
-      imgBase64 = imgBase64Str.toString();
-    });
   }
 
   formNuevaBanner() {
@@ -320,5 +327,3 @@ class _CrearLabelCatState extends State<CrearLabelCat> {
     );
   }
 }
-
-

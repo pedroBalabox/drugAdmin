@@ -17,6 +17,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:intl/intl.dart';
+import 'package:image/image.dart' as img;
 
 class CrearBanner extends StatefulWidget {
   @override
@@ -169,7 +170,7 @@ class _CrearBannerState extends State<CrearBanner> {
                     correcto
                         ? Container()
                         : Text(
-                            'Selecciona un banner para web (300x300 px)',
+                            'Selecciona un banner para web (1000x300 px)',
                             textAlign: TextAlign.center,
                             style:
                                 TextStyle(color: Colors.black54, fontSize: 13),
@@ -208,7 +209,7 @@ class _CrearBannerState extends State<CrearBanner> {
                     correcto
                         ? Container()
                         : Text(
-                            'Selecciona un banner para móvil (300x300 px)',
+                            'Selecciona un banner para móvil (600x200 px)',
                             textAlign: TextAlign.center,
                             style:
                                 TextStyle(color: Colors.black54, fontSize: 13),
@@ -224,29 +225,36 @@ class _CrearBannerState extends State<CrearBanner> {
   }
 
   pickImage(type) async {
-    final _picker = ImagePicker();
-    PickedFile image = await _picker.getImage(source: ImageSource.gallery);
-    // final imgBase64Str = await kIsWeb
-    //     ? networkImageToBase64(image.path)
-    //     : mobileb64(File(image.path));
-    var imgBase64Str;
-    if (kIsWeb) {
-      http.Response response = await http.get(Uri.parse(image.path));
-      final bytes = response?.bodyBytes;
-      imgBase64Str = base64Encode(bytes);
-    } else {
-      List<int> imageBytes = await File(image.path).readAsBytes();
-      imgBase64Str = base64Encode(imageBytes);
+    int maxSize = 900;
+    int quality = 70;
+
+    try {
+      final _picker = ImagePicker();
+      PickedFile image = await _picker.getImage(
+          source: ImageSource.gallery,
+          imageQuality: quality,
+          maxWidth: maxSize.toDouble(),
+          maxHeight: maxSize.toDouble());
+      showLoadingDialog(context, "Procesando imagen", "Espera un momento...");
+      Future.delayed(Duration(milliseconds: 500), () {
+        preprocessImage(image, context, maxSize, quality, maxMegabytes: 2)
+            .then((base64) {
+          if (base64 != "") {
+            setState(() {
+              if (type == 'desktop') {
+                imagePathDesktop = image;
+                bannerModel.imagenEscritorio = base64.toString();
+              } else {
+                imagePathMobile = image;
+                bannerModel.imagenMovil = base64.toString();
+              }
+            });
+          }
+        });
+      });
+    } catch (e) {
+      showErrorDialog(context, "Error para obtener la imagen", e.toString());
     }
-    setState(() {
-      if (type == 'desktop') {
-        imagePathDesktop = image;
-        bannerModel.imagenEscritorio = imgBase64Str.toString();
-      } else {
-        imagePathMobile = image;
-        bannerModel.imagenMovil = imgBase64Str.toString();
-      }
-    });
   }
 
   formNuevaBanner() {
@@ -332,7 +340,7 @@ class _CrearBannerState extends State<CrearBanner> {
               });
             },
           ),
-          EntradaTexto(
+          /* EntradaTexto(
             habilitado: !correcto,
             longMinima: 1,
             longMaxima: 100,
@@ -345,7 +353,7 @@ class _CrearBannerState extends State<CrearBanner> {
                 bannerModel.linkExterno = value;
               });
             },
-          ),
+          ), */
           SizedBox(height: smallPadding * 2),
           correcto
               ? Row(
@@ -402,7 +410,7 @@ class _CrearBannerState extends State<CrearBanner> {
                         : bannerModel.posicion == '0'
                             ? 1
                             : int.parse(bannerModel.posicion),
-                    "link_externo": bannerModel.linkExterno,
+                    /* "link_externo": bannerModel.linkExterno, */
                     "id_de_farmacia": bannerModel.idDeFarmacia,
                   },
                   method: 'post',

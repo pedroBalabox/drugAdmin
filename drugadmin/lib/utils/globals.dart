@@ -1,7 +1,13 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:drugadmin/utils/theme.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:http/http.dart' as http;
+import 'package:image/image.dart' as img;
 
 var isSandbox = true;
 
@@ -12,8 +18,6 @@ var apiUrl = isSandbox
 var baseFrontUrl = isSandbox
     ? 'https://sandbox.admin.drugmexico.com'
     : 'https://admin.drugmexico.com';
-
-
 
 getNetworkImage(String path) {
   return Image.network(
@@ -164,4 +168,90 @@ bodyLoad(context) {
       ],
     ),
   );
+}
+
+isLandscape(image) {
+  if (image.width > image.height) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+void showErrorDialog(context, title, message) {
+  // flutter defined function
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      // return object of type Dialog
+      return AlertDialog(
+        title: new Text(title),
+        content: new Text(message),
+        actions: <Widget>[
+          // usually buttons at the bottom of the dialog
+          new InkWell(
+            child: new Text("Cerrar"),
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+void showLoadingDialog(context, title, message) {
+  // flutter defined function
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      // return object of type Dialog
+      return AlertDialog(
+        title: new Text(title),
+        content: new Text(message),
+      );
+    },
+  );
+}
+
+processImage(context, bytes, maxSize, quality, maxMegabytes) async {
+  final bytesSize = bytes.lengthInBytes;
+  final kb = bytesSize / 1024;
+  final mb = kb / 1024;
+
+  String encodedImage = "";
+
+  if (mb > maxMegabytes) {
+    Navigator.of(context).pop();
+    showErrorDialog(
+        context, "Imagen muy grande", "La imagen debe pesar menos de 1 mb");
+  } else {
+    img.Image chosenImage = img.decodeImage(bytes);
+    img.Image thumbnail = isLandscape(chosenImage)
+        ? img.copyResize(chosenImage, width: maxSize)
+        : img.copyResize(chosenImage, height: maxSize);
+    encodedImage = base64Encode(img.encodeJpg(thumbnail, quality: quality));
+  }
+  return encodedImage;
+}
+
+Future<String> preprocessImage(image, context, maxSize, quality,
+    {maxMegabytes: 1}) async {
+  var imgBase64Str;
+  if (kIsWeb) {
+    http.Response response = await http.get(Uri.parse(image.path));
+    final bytes = response?.bodyBytes;
+    imgBase64Str =
+        await processImage(context, bytes, maxSize, quality, maxMegabytes);
+    if (imgBase64Str == "") {
+      return "";
+    }
+    Navigator.of(context).pop();
+  } else {
+    List<int> imageBytes = await File(image.path).readAsBytes();
+    imgBase64Str = base64Encode(imageBytes);
+  }
+  return imgBase64Str;
 }
