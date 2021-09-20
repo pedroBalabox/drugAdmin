@@ -197,8 +197,8 @@ class _DetallesCatState extends State<DetallesCat> {
   }
 
   pickImage() async {
-    int maxSize = 500;
-    int quality = 60;
+    int maxSize = 700;
+    int quality = 100;
 
     try {
       final _picker = ImagePicker();
@@ -209,7 +209,9 @@ class _DetallesCatState extends State<DetallesCat> {
           maxHeight: maxSize.toDouble());
       showLoadingDialog(context, "Procesando imagen", "Espera un momento...");
       Future.delayed(Duration(milliseconds: 500), () {
-        preprocessImage(image, context, maxSize, quality).then((base64) {
+        preprocessImage(image, context, maxSize, quality,
+                maxMegabytes: 1, skipImageProcessing: true)
+            .then((base64) {
           if (base64 != "") {
             setState(() {
               imagePath = image;

@@ -224,6 +224,23 @@ class _CrearBannerState extends State<CrearBanner> {
         ));
   }
 
+  /* pickImage1(type) async {
+    final _picker = ImagePicker();
+    PickedFile image = await _picker.getImage(source: ImageSource.gallery);
+    // final imgBase64Str = await kIsWeb
+    //     ? networkImageToBase64(image.path)
+    //     : mobileb64(File(image.path));
+    var imgBase64Str;
+    if (kIsWeb) {
+      http.Response response = await http.get(Uri.parse(image.path));
+      final bytes = response?.bodyBytes;
+      imgBase64Str = base64Encode(bytes);
+    } else {
+      List<int> imageBytes = await File(image.path).readAsBytes();
+      imgBase64Str = base64Encode(imageBytes);
+    }
+  } */
+
   pickImage(type) async {
     int maxSize = 900;
     int quality = 70;
@@ -235,9 +252,10 @@ class _CrearBannerState extends State<CrearBanner> {
           imageQuality: quality,
           maxWidth: maxSize.toDouble(),
           maxHeight: maxSize.toDouble());
-      showLoadingDialog(context, "Procesando imagen", "Espera un momento...");
+      showLoadingDialog(context, "Procesando imagen", "Espera un momentos...");
       Future.delayed(Duration(milliseconds: 500), () {
-        preprocessImage(image, context, maxSize, quality, maxMegabytes: 2)
+        preprocessImage(image, context, maxSize, quality,
+                maxMegabytes: 1, skipImageProcessing: true)
             .then((base64) {
           if (base64 != "") {
             setState(() {

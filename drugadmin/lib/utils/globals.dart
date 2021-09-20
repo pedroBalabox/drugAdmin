@@ -238,20 +238,36 @@ processImage(context, bytes, maxSize, quality, maxMegabytes) async {
 }
 
 Future<String> preprocessImage(image, context, maxSize, quality,
-    {maxMegabytes: 1}) async {
+    {maxMegabytes: 1, skipImageProcessing: false}) async {
   var imgBase64Str;
   if (kIsWeb) {
     http.Response response = await http.get(Uri.parse(image.path));
     final bytes = response?.bodyBytes;
-    imgBase64Str =
-        await processImage(context, bytes, maxSize, quality, maxMegabytes);
-    if (imgBase64Str == "") {
-      return "";
+    if (skipImageProcessing) {
+      final bytesSize = bytes.lengthInBytes;
+      final kb = bytesSize / 1024;
+      final mb = kb / 1024;
+
+      if (mb > maxMegabytes) {
+        Navigator.of(context).pop();
+        showErrorDialog(context, "Imagen muy grande",
+            "La imagen debe pesar menos de " + maxMegabytes.toString() + " mb");
+        return "";
+      }
+      
+      imgBase64Str = base64Encode(bytes);
+    } else {
+      imgBase64Str =
+          await processImage(context, bytes, maxSize, quality, maxMegabytes);
+      if (imgBase64Str == "") {
+        return "";
+      }
     }
     Navigator.of(context).pop();
   } else {
     List<int> imageBytes = await File(image.path).readAsBytes();
     imgBase64Str = base64Encode(imageBytes);
+    Navigator.of(context).pop();
   }
   return imgBase64Str;
 }

@@ -295,7 +295,9 @@ class _TabAceptadaState extends State<BannerDetalles> {
           maxHeight: maxSize.toDouble());
       showLoadingDialog(context, "Procesando imagen", "Espera un momento...");
       Future.delayed(Duration(milliseconds: 500), () {
-        preprocessImage(image, context, maxSize, quality, maxMegabytes: 2).then((base64) {
+        preprocessImage(image, context, maxSize, quality,
+                maxMegabytes: 1, skipImageProcessing: true)
+            .then((base64) {
           if (base64 != "") {
             setState(() {
               if (type == 'desktop') {
